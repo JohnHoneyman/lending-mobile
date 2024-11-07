@@ -1,4 +1,4 @@
-package com.example.lending_mobile
+package com.example.lendingmobile
 
 import io.flutter.embedding.android.FlutterActivity
 

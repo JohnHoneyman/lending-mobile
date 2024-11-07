@@ -1,4 +1,4 @@
-# lending_mobile
+# lendingmobile
 
 A new Flutter project.
 
