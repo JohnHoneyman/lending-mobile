@@ -6,5 +6,6 @@
         <domain includeSubdomains="true">host.docker.internal</domain>
         <domain includeSubdomains="true">localhost</domain>
         <domain includeSubdomains="true">192.168.68.116</domain>
+        <domain includeSubdomains="true">172.20.10.5</domain>
     </domain-config>
 </network-security-config>
