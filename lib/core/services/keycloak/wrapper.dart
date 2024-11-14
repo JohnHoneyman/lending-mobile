@@ -145,6 +145,7 @@ class KeycloakWrapper {
       await _appAuth.endSession(request);
       await _secureStorage.deleteAll();
       _streamController.add(false);
+      tokenResponse = null;
       return true;
     } catch (e, s) {
       onError('Failed to logout.', e, s);

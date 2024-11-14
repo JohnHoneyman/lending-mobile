@@ -5,7 +5,7 @@
         <domain includeSubdomains="true">10.0.2.2</domain>
         <domain includeSubdomains="true">host.docker.internal</domain>
         <domain includeSubdomains="true">localhost</domain>
-        <domain includeSubdomains="true">192.168.68.113</domain>
+        <domain includeSubdomains="true">192.168.68.115</domain>
         <domain includeSubdomains="true">172.20.10.5</domain>
         <domain includeSubdomains="true">keycloak.with98labs.com</domain>
     </domain-config>

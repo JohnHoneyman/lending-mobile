@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lendingmobile/core/common/config/keycloak_config.dart';
 import 'package:lendingmobile/core/common/index.dart';
 
 class PersonalInfoPage extends StatelessWidget {
