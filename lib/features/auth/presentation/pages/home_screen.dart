@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/features/auth/presentation/pages/sections/popular_loan_offers_section.dart';
@@ -38,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
         future: keycloakWrapper.getUserInfo(),
         builder: (context, snapshot) {
           final name = snapshot.data?['name'];
+          log(keycloakWrapper.accessToken!);
           return SafeArea(
             child: RefreshIndicator(
               onRefresh: _onPullToRefresh,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
+import 'package:lendingmobile/features/loan/presentation/pages/loan_history_page.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 
 class ProfilePage extends StatelessWidget {
@@ -106,7 +107,9 @@ class ProfilePage extends StatelessWidget {
                   ProfileInkwell(
                     text: 'Loan History',
                     icon: Icons.monetization_on_outlined,
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(context, LoanHistoryPage.route());
+                    },
                   ),
                   ProfileInkwell(
                     text: 'Password & Security',
