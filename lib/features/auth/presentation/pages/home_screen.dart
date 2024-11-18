@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BotNavbar(
+      bottomNavigationBar: BotNavbarWidget(
         selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
