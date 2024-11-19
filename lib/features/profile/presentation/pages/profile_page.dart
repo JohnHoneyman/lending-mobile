@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
-import 'package:lendingmobile/features/loan/presentation/pages/loan_history_page.dart';
+import 'package:lendingmobile/features/loan/index.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 
 class ProfilePage extends StatelessWidget {
