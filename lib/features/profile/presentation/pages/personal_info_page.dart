@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
+import 'package:lendingmobile/features/profile/index.dart';
 
 class PersonalInfoPage extends StatelessWidget {
   static route() => MaterialPageRoute(
@@ -9,96 +10,210 @@ class PersonalInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final profileItems = [
+      {
+        'infoName': 'Personal Information',
+        'route': PersonalInformationPage.route(),
+      },
+      {
+        'infoName': 'Valid IDs',
+        'route': ValidIdsPage.route(),
+      },
+      {
+        'infoName': 'Residential Address',
+        'route': ResidentialAddressPage.route(),
+      },
+      {
+        'infoName': 'Proof of Income',
+        'route': ResidentialAddressPage.route(),
+        'isVerified': true,
+      },
+      {
+        'infoName': 'Existing Loans (if any)',
+        'route': ResidentialAddressPage.route(),
+      },
+      {
+        'infoName': 'Credit Cards (if any)',
+        'route': ResidentialAddressPage.route(),
+      },
+      {
+        'infoName': 'Recurring monthly expenses (if any)',
+        'route': ResidentialAddressPage.route(),
+      },
+    ];
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Personal Information'),
+        backgroundColor: const Color(0xffeeeeee),
       ),
-      body: FutureBuilder(
+      backgroundColor: const Color(0xffeeeeee),
+      body: FutureBuilder<Map<String, dynamic>?>(
         future: keycloakWrapper.getUserInfo(),
         builder: (context, snapshot) {
-          print(snapshot.data);
-          final name = snapshot.data?['name'] ?? '';
-          final givenName = snapshot.data?['given_name'] ?? '';
-          final familyName = snapshot.data?['family_name'] ?? '';
-          final username = snapshot.data?['preferred_username'] ?? '';
-          final email = snapshot.data?['email'] ?? '';
-          final accessToken = keycloakWrapper.accessToken ?? '';
-          final refreshToken = keycloakWrapper.refreshToken ?? '';
-          final idToken = keycloakWrapper.idToken ?? '';
-          // final authenticationStream =
-          //     keycloakWrapper.authenticationStream;
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-              ),
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.center,
-                      child: Container(
-                        height: 60,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: const Color(0xff65558F),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          color: Colors.white,
-                          size: 40,
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(
+              child: Text('Error: ${snapshot.error}'),
+            );
+          }
+
+          final userData = snapshot.data ?? {};
+          final userName = userData['name'] ?? 'John Cena';
+          final userEmail = userData['email'] ?? 'johncena@gmail.com';
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: ListView(
+              children: [
+                Container(
+                  height: 72,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Account Verification',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xff573D9B),
                         ),
                       ),
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [const Text('Name'), Text(name)],
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [const Text('Username'), Text(username)],
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [const Text('Email'), Text(email)],
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'accessToken',
+                      CircularProgressIndicator(
+                        value: 0.6,
+                        backgroundColor: Colors.grey,
+                      )
+                    ],
+                  ),
+                ),
+                const Gap(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 8,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            height: 50,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: const Color(0xff573D9B),
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                            child: const Icon(
+                              Icons.person,
+                              color: Colors.white,
+                              size: 35,
+                            ),
+                          ),
+                          const Gap(width: 8),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                userName,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text(
+                                userEmail,
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 4,
+                          horizontal: 8,
                         ),
-                        Text(
-                            '${accessToken.substring(0, 15)}}.....${accessToken.substring(accessToken.length - 10, accessToken.length)}')
-                      ],
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('refreshToken'),
-                        Text(
-                          '${refreshToken.substring(0, 15)}.....${refreshToken.substring(refreshToken.length - 10, refreshToken.length)}',
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          color: const Color(0xff65558f),
                         ),
-                      ],
-                    ),
-                    const Gap(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('idToken'),
-                        Text(
-                          '${idToken.substring(0, 15)}.....${idToken.substring(idToken.length - 10, idToken.length)} ',
+                        child: const Row(
+                          children: [
+                            Icon(
+                              Icons.edit_outlined,
+                              color: Colors.white,
+                              size: 16,
+                            ),
+                            Gap(width: 4),
+                            Text(
+                              'Edit',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            )
+                          ],
                         ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(height: 8),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: profileItems.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        ProfileInfoTypeWidget(
+                          infoName: profileItems[index]['infoName'] as String,
+                          isVerified:
+                              profileItems[index]['isVerified'] ?? false,
+                          onTap: () => Navigator.push(
+                            context,
+                            profileItems[index]['route'] as Route,
+                          ),
+                        ),
+                        const Gap(height: 8),
                       ],
-                    ),
-                    const Gap(),
-                  ]),
+                    );
+                  },
+                ),
+                Container(
+                  height: 72,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Credit Score',
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                const Gap(height: 8),
+              ],
             ),
           );
         },
