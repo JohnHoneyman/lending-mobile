@@ -16,7 +16,6 @@ class PersonalInfoPage extends StatelessWidget {
       body: FutureBuilder(
         future: keycloakWrapper.getUserInfo(),
         builder: (context, snapshot) {
-          print(snapshot.data);
           final name = snapshot.data?['name'] ?? '';
           final givenName = snapshot.data?['given_name'] ?? '';
           final familyName = snapshot.data?['family_name'] ?? '';

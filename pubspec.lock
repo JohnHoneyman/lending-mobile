@@ -174,6 +174,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.2.1"
+  flutter_json_schema_form:
+    dependency: "direct main"
+    description:
+      name: flutter_json_schema_form
+      sha256: efdc85ca308d520788046d4fdf3537a5809ea851251e88f2a457ee49b0729fc3
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -312,6 +320,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.7"
+  json_schema_document:
+    dependency: transitive
+    description:
+      name: json_schema_document
+      sha256: "916cb2b61d7a95a5d7cc003386ed02cd2aa70943371dfe1a236be3c8557741c2"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.4"
   jwt_decode:
     dependency: transitive
     description:
@@ -645,6 +661,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.2"
+  tuple:
+    dependency: transitive
+    description:
+      name: tuple
+      sha256: a97ce2013f240b2f3807bcbaf218765b6f301c3eff91092bcfa23a039e7dd151
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.2"
   typed_data:
     dependency: transitive
     description:

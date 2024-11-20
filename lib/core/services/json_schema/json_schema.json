@@ -1,0 +1,30 @@
+{
+  "schema": "https://json-schema.org/draft/2019-09/schema",
+  "id": "http://example.com/example.json",
+  "type": "object",
+  "default": {},
+  "title": "Clinic",
+  "description": "A Clinic is where patients can have aesthetic sessions with their doctors.",
+  "required": ["name", "cnpj"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "default": "",
+      "title": "Name",
+      "examples": ["Rosa Clínica"]
+    },
+    "cnpj": {
+      "type": "string",
+      "default": "",
+      "title": "CNPJ",
+      "description": "It is unique for each clinic.",
+      "examples": ["05.768.725/0001-48"]
+    }
+  },
+  "examples": [
+    {
+      "name": "Rosa Clínica",
+      "cnpj": "05.768.725/0001-48"
+    }
+  ]
+}
