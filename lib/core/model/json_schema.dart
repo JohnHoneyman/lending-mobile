@@ -6,6 +6,11 @@ class JsonSchema {
   final JsonSchema? items;
   final List<String>? required;
   final List<String>? enumerated;
+  final int? minimum;
+  final int? maximum;
+  final bool? additionalProperties;
+  final int? minLength;
+  final int? maxLength;
 
   JsonSchema({
     required this.type,
@@ -14,6 +19,11 @@ class JsonSchema {
     this.items,
     this.required,
     this.enumerated,
+    this.minimum,
+    this.maximum,
+    this.additionalProperties,
+    this.minLength,
+    this.maxLength,
   });
 
   factory JsonSchema.fromJson(Map<String, dynamic> json) {
@@ -29,6 +39,11 @@ class JsonSchema {
           : null, // Parse `items` as a single JsonSchema,
       required: json['required'] as List<String>?,
       enumerated: json['enum'] as List<String>?,
+      minimum: json['minimum'] as int?,
+      maximum: json['maximum'] as int?,
+      minLength: json['minLength'] as int?,
+      maxLength: json['minLength'] as int?,
+      additionalProperties: json['additionalProperties'] as bool?,
     );
   }
 
@@ -42,12 +57,45 @@ class JsonSchema {
       if (items != null) 'items': items!.toJson(), // Serialize `items`
       if (required != null) 'required': required,
       if (enumerated != null) 'enum': enumerated,
+      if (minimum != null) 'minimum': minimum,
+      if (maximum != null) 'maximum': maximum,
+      if (additionalProperties != null)
+        'additionalProperties': additionalProperties,
     };
     return json;
   }
 
+  // @override
+  // String toString() {
+  //   return 'JsonSchema(type: $type, ${title != null ? 'title: $title, ' : ''}${properties != null ? 'properties: {$properties}, ' : ''}${items != null ? '{items: $items}, ' : ''}${required != null ? 'required: $required, ' : ''}${enumerated != null ? 'enum: $enumerated, ' : ''}${minimum != null ? 'minimum: $minimum, ' : ''}${maximum != null ? 'maximum: $maximum, ' : ''}${additionalProperties != null ? 'additionalProperties: $additionalProperties, ' : ''})';
+  // }
+
   @override
   String toString() {
-    return 'JsonSchema(type: $type, ${title != null ? 'title: $title, ' : ''}${properties != null ? 'properties: {$properties}, ' : ''}${items != null ? '{items: $items}, ' : ''}${required != null ? 'required: $required' : ''}${enumerated != null ? 'enum: $enumerated' : ''})';
+    final buffer = StringBuffer();
+
+    buffer.writeln('JsonSchema(');
+    buffer.writeln('  type: $type,');
+    if (title != null) buffer.writeln('  title: $title,');
+    if (required != null) buffer.writeln('  required: $required,');
+    if (properties != null) {
+      buffer.writeln('  properties: {');
+      properties!.forEach((key, value) {
+        buffer.writeln('    $key: $value,');
+      });
+      buffer.writeln('  },');
+    }
+    if (items != null) buffer.writeln('  items: $items,');
+    if (enumerated != null) buffer.writeln('  enum: $enumerated,');
+    if (minimum != null) buffer.writeln('  minimum: $minimum,');
+    if (maximum != null) buffer.writeln('  maximum: $maximum,');
+    if (additionalProperties != null) {
+      buffer.writeln('  additionalProperties: {');
+      buffer.writeln('    $additionalProperties');
+      buffer.writeln('  },');
+    }
+    buffer.write(')');
+
+    return buffer.toString();
   }
 }
