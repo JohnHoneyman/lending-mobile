@@ -13,7 +13,7 @@ class PersonalInfoPage extends StatelessWidget {
     final profileItems = [
       {
         'infoName': 'Personal Information',
-        'route': PersonalInformationPage.route(),
+        'route': PersonalInformationFormPage.route(),
       },
       {
         'infoName': 'Valid IDs',
