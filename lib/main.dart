@@ -21,19 +21,18 @@ class LendingApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      // home: StreamBuilder<bool>(
-      //   stream: keycloakWrapper.authenticationStream,
-      //   builder: (context, snapshot) {
-      //     if (snapshot.connectionState == ConnectionState.waiting) {
-      //       return const LoadingScreen();
-      //     } else if (snapshot.data!) {
-      //       return const HomeScreen();
-      //     } else {
-      //       return const LoginScreen();
-      //     }
-      //   },
-      // ),
-      home: PersonalInformationFormPage(),
+      home: StreamBuilder<bool>(
+        stream: keycloakWrapper.authenticationStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const LoadingScreen();
+          } else if (snapshot.data!) {
+            return const HomeScreen();
+          } else {
+            return const LoginScreen();
+          }
+        },
+      ),
     );
   }
 }
