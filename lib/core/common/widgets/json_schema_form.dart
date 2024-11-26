@@ -20,9 +20,10 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
   final TextEditingController _dateController = TextEditingController();
 
   Widget buildField(JsonSchema schema, String? keyName) {
+    Widget field;
     switch (schema.type) {
       case 'object':
-        return Column(
+        field = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(schema.title ?? ''),
@@ -33,7 +34,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
         );
       case 'string':
         if (schema.enumerated != null) {
-          return DropdownButtonFormField<String>(
+          field = DropdownButtonFormField<String>(
             decoration: InputDecoration(labelText: schema.title ?? keyName),
             items: schema.enumerated?.map((value) {
               return DropdownMenuItem(
@@ -58,7 +59,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           );
         }
         if (schema.format != null && schema.format == 'date') {
-          return TextFormField(
+          field = TextFormField(
             controller: _dateController,
             decoration: InputDecoration(
               labelText: schema.title ?? keyName,
@@ -73,13 +74,14 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                   (value == null || value.isEmpty)) {
                 return 'Please enter your ${schema.title ?? keyName}.';
               }
+              return null;
             },
             onTap: () {
               _selectDate();
             },
           );
         }
-        return TextFormField(
+        field = TextFormField(
           decoration: InputDecoration(
             labelText: schema.title ?? keyName,
           ),
@@ -107,7 +109,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
         );
       case 'integer' || 'number':
-        return TextFormField(
+        field = TextFormField(
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
@@ -135,7 +137,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
         );
       case 'boolean':
         final bool currentValue = formData[keyName ?? ''] ?? false;
-        return Row(
+        field = Row(
           children: [
             Text(schema.title ?? keyName!),
             Checkbox(
@@ -159,7 +161,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
         );
       default:
-        return Padding(
+        field = Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
             'Missing widget for: ${schema.type}',
@@ -171,6 +173,14 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           ),
         );
     }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        field,
+        if (schema.description != null) Text(schema.description!),
+      ],
+    );
   }
 
   Future<void> _selectDate() async {

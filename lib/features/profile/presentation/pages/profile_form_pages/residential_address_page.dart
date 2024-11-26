@@ -16,7 +16,7 @@ class ResidentialAddressPage extends StatefulWidget {
 class _ResidentialAddressPageState extends State<ResidentialAddressPage> {
   @override
   Widget build(BuildContext context) {
-    final schema = JsonSchema.fromJson(JsonSchemaData.residentialAddress);
+    final schema = JsonSchema.fromJson(JsonSchemaData.validIds);
     return Scaffold(
       appBar: AppBar(
         title: Text(schema.title ?? ''),
