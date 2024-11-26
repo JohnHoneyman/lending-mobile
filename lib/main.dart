@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/constants/constants.dart';
 import 'package:lendingmobile/features/auth/index.dart';
-import 'package:lendingmobile/features/profile/index.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();

@@ -1,6 +1,21 @@
 import 'package:lendingmobile/core/model/json_schema.dart';
 
 final jsonSchemaData = [
+  // Test data
+  {
+    "type": "object",
+    "title": "User Info",
+    "properties": {
+      "Name": {"type": "string", "title": "Name"},
+      "Age": {"type": "number", "title": "Age", "minimum": 18},
+      "Gender": {
+        "type": "string",
+        "title": "Gender",
+        "enum": ["Male", "Female", "Other"]
+      }
+    },
+    "required": ["Name", "Age"]
+  },
   // Personal Information
   {
     "title": "Personal Information",
@@ -146,7 +161,14 @@ final jsonSchemaData = [
     "properties": {
       "country": {
         "type": "string",
-        "enum": ["Philippines", "Japan", "Malaysia", "Thailand", "Singapore"]
+        "enum": [
+          "Philippines",
+          "Japan",
+          "Malaysia",
+          "Thailand",
+          "Singapore",
+          "Agi Si Don"
+        ]
       },
       "province": {"type": "string"},
       "cityMunicipality": {"type": "string"},
