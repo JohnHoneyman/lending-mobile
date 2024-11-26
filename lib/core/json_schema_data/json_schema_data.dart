@@ -6,7 +6,12 @@ final jsonSchemaData = [
     "type": "object",
     "title": "User Info",
     "properties": {
-      "Name": {"type": "string", "title": "Name"},
+      "Name": {
+        "type": "string",
+        "title": "Name",
+        "minLength": 1,
+        "maxLength": 10,
+      },
       "Age": {"type": "number", "title": "Age", "minimum": 18},
       "Gender": {
         "type": "string",
@@ -14,7 +19,7 @@ final jsonSchemaData = [
         "enum": ["Male", "Female", "Other"]
       }
     },
-    "required": ["Name", "Age"]
+    "required": ["Name", "Age", "Gender"]
   },
   // Personal Information
   {
@@ -161,14 +166,7 @@ final jsonSchemaData = [
     "properties": {
       "country": {
         "type": "string",
-        "enum": [
-          "Philippines",
-          "Japan",
-          "Malaysia",
-          "Thailand",
-          "Singapore",
-          "Agi Si Don"
-        ]
+        "enum": ["Philippines", "Japan", "Malaysia", "Thailand", "Singapore"]
       },
       "province": {"type": "string"},
       "cityMunicipality": {"type": "string"},

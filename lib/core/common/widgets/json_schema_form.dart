@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
 
 class JsonSchemaForm extends StatefulWidget {
   final JsonSchema jsonSchema;
-  final VoidCallback? onSubmit;
   const JsonSchemaForm({
     super.key,
     required this.jsonSchema,
-    this.onSubmit,
   });
 
   @override
@@ -17,6 +16,8 @@ class JsonSchemaForm extends StatefulWidget {
 class _JsonSchemaFormState extends State<JsonSchemaForm> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> formData = {};
+
+  final TextEditingController _dateController = TextEditingController();
 
   Widget buildField(JsonSchema schema, String? keyName) {
     switch (schema.type) {
@@ -45,6 +46,27 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                 formData[keyName ?? ''] = value;
               });
             },
+            validator: (value) {
+              if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
+                      false) &&
+                  (value == null || value.isEmpty)) {
+                return 'Please enter your ${schema.title ?? keyName}.';
+              }
+
+              return null;
+            },
+          );
+        }
+        if (schema.format != null && schema.format == 'date') {
+          return TextField(
+            controller: _dateController,
+            decoration: InputDecoration(
+              labelText: schema.title ?? keyName,
+            ),
+            readOnly: true,
+            onTap: () {
+              _selectDate();
+            },
           );
         }
         return TextFormField(
@@ -56,17 +78,43 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               formData[keyName ?? ''] = value;
             });
           },
+          validator: (value) {
+            if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
+                    false) &&
+                (value == null || value.isEmpty)) {
+              return 'Please enter your ${schema.title ?? keyName}.';
+            }
+            if (schema.minLength != null && value!.length < schema.minLength!) {
+              return 'Name must be at least ${schema.minLength} characters long.';
+            }
+            if (schema.maxLength != null && value!.length > schema.maxLength!) {
+              return 'Name must not be more than ${schema.maxLength} characters long.';
+            }
+            return null;
+          },
         );
-      case 'integer':
+      case 'integer' || 'number':
         return TextFormField(
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
           decoration: InputDecoration(
             labelText: schema.title ?? keyName,
           ),
-          keyboardType: TextInputType.number,
           onChanged: (value) {
             setState(() {
               formData[keyName ?? ''] = int.tryParse(value);
             });
+          },
+          validator: (value) {
+            if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
+                    false) &&
+                (value == null || value.isEmpty)) {
+              return 'Please enter your ${schema.title ?? keyName}.';
+            }
+            if (schema.minimum != null && int.parse(value!) < schema.minimum!) {
+              return '${schema.title ?? keyName} must be at least ${schema.minimum}.';
+            }
+            return null;
           },
         );
       case 'array':
@@ -84,9 +132,25 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
     }
   }
 
+  Future<void> _selectDate() async {
+    DateTime? selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime(2100),
+    );
+
+    if (selectedDate != null) {
+      setState(() {
+        _dateController.text = selectedDate.toString().split(' ')[0];
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
+      key: _formKey,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -99,18 +163,27 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                 ),
               ...?widget.jsonSchema.properties?.entries.map(
                 (entry) {
-                  return buildField(entry.value, entry.key);
+                  return buildField(
+                    entry.value,
+                    entry.key,
+                  );
                 },
               ),
               ElevatedButton(
                 onPressed: () {
                   print('Form Data: $formData');
-                  if (_formKey.currentState?.validate() ?? false) {
-                    if (widget.onSubmit != null) {
-                      widget.onSubmit!();
-                    }
+                  if (_formKey.currentState!.validate()) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Processing Data'),
+                      ),
+                    );
                   } else {
-                    print('Validation failed');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Validation failed'),
+                      ),
+                    );
                   }
                 },
                 child: const Text('Submit'),
