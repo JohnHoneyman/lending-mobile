@@ -1,8 +1,5 @@
-import 'package:lendingmobile/core/model/json_schema.dart';
-
-final jsonSchemaData = [
-  // Test data
-  {
+class JsonSchemaData {
+  static final testData = {
     "type": "object",
     "title": "User Info",
     "properties": {
@@ -20,9 +17,9 @@ final jsonSchemaData = [
       }
     },
     "required": ["Name", "Age", "Gender"]
-  },
-  // Personal Information
-  {
+  };
+
+  static final personalInformation = {
     "title": "Personal Information",
     "type": "object",
     "required": [
@@ -148,9 +145,9 @@ final jsonSchemaData = [
         "nullable": true
       }
     }
-  },
-  // Residential Address
-  {
+  };
+
+  static final residentialAddress = {
     "type": "object",
     "title": "Residential Address",
     "required": [
@@ -176,9 +173,9 @@ final jsonSchemaData = [
       "lotNumber": {"type": "integer"},
       "zipCode": {"type": "integer"}
     }
-  },
-  // Existing Loans/Financial Obligations
-  {
+  };
+
+  static final existingLoansFinancialObligations = {
     "type": "object",
     "title": "Existing Loans/Financial Obligations",
     "properties": {
@@ -206,9 +203,9 @@ final jsonSchemaData = [
         }
       }
     }
-  },
-  // Active Credit Card
-  {
+  };
+
+  static final activeCreditCard = {
     "type": "object",
     "title": "Active Credit Card",
     "properties": {
@@ -232,9 +229,9 @@ final jsonSchemaData = [
       "minimumMonthlyPayment"
     ],
     "additionalProperties": false
-  },
-  //Recurring Monthly Expenses
-  {
+  };
+
+  static final recurringMonthlyExpenses = {
     "type": "object",
     "title": "Recurring Monthly Expenses",
     "properties": {
@@ -260,8 +257,82 @@ final jsonSchemaData = [
       "otherPaymentExpenses"
     ],
     "additionalProperties": false
-  },
-];
+  };
 
-final jsonSchema =
-    jsonSchemaData.map((data) => JsonSchema.fromJson(data)).toList();
+  static final proofOfIncome = {
+    "type": "object",
+    "properties": {
+      "proofOfIncome": {
+        "type": "object",
+        "properties": {
+          "employmentStatus": {
+            "type": "string",
+            "enum": ["Employed", "Unemployed", "Self-Employed", "Retired"]
+          }
+        },
+        "required": ["employmentStatus"]
+      },
+      "employer'sInfo": {
+        "type": "object",
+        "properties": {
+          "companyName": {"type": "string"},
+          "address": {"type": "string"},
+          "contactNumber": {"type": "string"},
+          "contactPerson": {"type": "string"}
+        },
+        "required": ["companyName", "address", "contactNumber", "contactPerson"]
+      },
+      "employmentDetails": {
+        "type": "object",
+        "properties": {
+          "jobTitlePosition": {"type": "string"},
+          "startDateOfEmployment": {"type": "string"},
+          "grossMonthlyIncome": {"type": "integer", "minimum": 5000},
+          "payslipCOE": {"type": "boolean"}
+        },
+        "required": [
+          "jobTitlePosition",
+          "startDateOfEmployment",
+          "grossMonthlyIncome",
+          "payslipCOE"
+        ]
+      }
+    },
+    "required": ["proofOfIncome", "employer'sInfo", "employmentDetails"]
+  };
+
+  static final validIds = {
+    "type": "object",
+    "title": "Valid Id's Form",
+    "required": ["validId's"],
+    "properties": {
+      "validId's": {
+        "type": "object",
+        "title": "Valid ID's",
+        "required": ["idType", "idNumber"],
+        "properties": {
+          "idType": {
+            "type": "string",
+            "title": "Type of ID",
+            "enum": [
+              "SSS",
+              "UMID",
+              "Driver's License",
+              "Passport",
+              "TIN ID",
+              "Voter's ID",
+              "National ID",
+              "Postal ID"
+            ]
+          },
+          "idNumber": {
+            "type": "string",
+            "title": "ID Number",
+            "minLength": 1,
+            "maxLength": 20
+          }
+        }
+      }
+    }
+  };
+}

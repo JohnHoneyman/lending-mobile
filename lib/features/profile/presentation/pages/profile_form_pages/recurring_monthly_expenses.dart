@@ -3,22 +3,21 @@ import 'package:lendingmobile/core/common/widgets/json_schema_form.dart';
 import 'package:lendingmobile/core/json_schema_data/json_schema_data.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
 
-class PersonalInformationFormPage extends StatefulWidget {
+class RecurringMonthlyExpenses extends StatefulWidget {
   static route() => MaterialPageRoute(
-        builder: (context) => const PersonalInformationFormPage(),
+        builder: (context) => const RecurringMonthlyExpenses(),
       );
-  const PersonalInformationFormPage({super.key});
+  const RecurringMonthlyExpenses({super.key});
 
   @override
-  State<PersonalInformationFormPage> createState() =>
-      _PersonalInformationFormPageState();
+  State<RecurringMonthlyExpenses> createState() =>
+      _RecurringMonthlyExpensesState();
 }
 
-class _PersonalInformationFormPageState
-    extends State<PersonalInformationFormPage> {
+class _RecurringMonthlyExpensesState extends State<RecurringMonthlyExpenses> {
   @override
   Widget build(BuildContext context) {
-    final schema = JsonSchema.fromJson(JsonSchemaData.personalInformation);
+    final schema = JsonSchema.fromJson(JsonSchemaData.recurringMonthlyExpenses);
     return Scaffold(
       appBar: AppBar(
         title: Text(schema.title ?? ''),

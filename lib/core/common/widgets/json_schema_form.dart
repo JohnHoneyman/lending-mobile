@@ -58,12 +58,22 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           );
         }
         if (schema.format != null && schema.format == 'date') {
-          return TextField(
+          return TextFormField(
             controller: _dateController,
             decoration: InputDecoration(
               labelText: schema.title ?? keyName,
             ),
             readOnly: true,
+            onTapOutside: (event) {
+              FocusScope.of(context).unfocus();
+            },
+            validator: (value) {
+              if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
+                      false) &&
+                  (value == null || value.isEmpty)) {
+                return 'Please enter your ${schema.title ?? keyName}.';
+              }
+            },
             onTap: () {
               _selectDate();
             },
@@ -73,6 +83,9 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           decoration: InputDecoration(
             labelText: schema.title ?? keyName,
           ),
+          onTapOutside: (event) {
+            FocusScope.of(context).unfocus();
+          },
           onChanged: (value) {
             setState(() {
               formData[keyName ?? ''] = value;
@@ -100,6 +113,9 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           decoration: InputDecoration(
             labelText: schema.title ?? keyName,
           ),
+          onTapOutside: (event) {
+            FocusScope.of(context).unfocus();
+          },
           onChanged: (value) {
             setState(() {
               formData[keyName ?? ''] = int.tryParse(value);
@@ -117,6 +133,21 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             return null;
           },
         );
+      case 'boolean':
+        final bool currentValue = formData[keyName ?? ''] ?? false;
+        return Row(
+          children: [
+            Text(schema.title ?? keyName!),
+            Checkbox(
+                value: currentValue,
+                activeColor: Colors.deepPurple,
+                onChanged: (bool? value) {
+                  setState(() {
+                    formData[keyName ?? ''] = value ?? false;
+                  });
+                }),
+          ],
+        );
       case 'array':
         return ArrayField(
           schema: schema,
@@ -128,7 +159,17 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
         );
       default:
-        return const SizedBox.shrink();
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            'Missing widget for: ${schema.type}',
+            style: const TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.red,
+            ),
+          ),
+        );
     }
   }
 
@@ -157,10 +198,6 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (widget.jsonSchema.title != null)
-                Text(
-                  widget.jsonSchema.title!,
-                ),
               ...?widget.jsonSchema.properties?.entries.map(
                 (entry) {
                   return buildField(

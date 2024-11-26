@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form.dart';
 import 'package:lendingmobile/core/json_schema_data/json_schema_data.dart';
+import 'package:lendingmobile/core/model/json_schema.dart';
 
 class ResidentialAddressPage extends StatefulWidget {
   static route() => MaterialPageRoute(
@@ -15,9 +16,11 @@ class ResidentialAddressPage extends StatefulWidget {
 class _ResidentialAddressPageState extends State<ResidentialAddressPage> {
   @override
   Widget build(BuildContext context) {
-    final schema = jsonSchema[1]; // TODO: API CALL
+    final schema = JsonSchema.fromJson(JsonSchemaData.residentialAddress);
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: Text(schema.title ?? ''),
+      ),
       body: JsonSchemaForm(
         jsonSchema: schema,
       ),

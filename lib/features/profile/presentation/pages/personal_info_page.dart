@@ -17,7 +17,7 @@ class PersonalInfoPage extends StatelessWidget {
       },
       {
         'infoName': 'Valid IDs',
-        'route': ValidIdsPage.route(),
+        'route': ValidIdsFormPage.route(),
       },
       {
         'infoName': 'Residential Address',
@@ -25,20 +25,20 @@ class PersonalInfoPage extends StatelessWidget {
       },
       {
         'infoName': 'Proof of Income',
-        'route': ResidentialAddressPage.route(),
+        'route': ProofOfIncomeFormsPage.route(),
         'isVerified': true,
       },
       {
         'infoName': 'Existing Loans (if any)',
-        'route': ResidentialAddressPage.route(),
+        'route': FinancialObligationsFormPage.route(),
       },
       {
         'infoName': 'Credit Cards (if any)',
-        'route': ResidentialAddressPage.route(),
+        'route': ActiveCreditCardFormPage.route(),
       },
       {
         'infoName': 'Recurring monthly expenses (if any)',
-        'route': ResidentialAddressPage.route(),
+        'route': RecurringMonthlyExpenses.route(),
       },
     ];
 
