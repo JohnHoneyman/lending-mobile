@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lendingmobile/core/common/widgets/json_schema_form.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_form.dart';
 import 'package:lendingmobile/core/json_schema_data/json_schema_data.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
 

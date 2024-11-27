@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:lendingmobile/core/common/widgets/button.dart';
+import 'package:lendingmobile/core/common/widgets/gap.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
 
 class JsonSchemaForm extends StatefulWidget {
@@ -21,6 +23,13 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
 
   Widget buildField(JsonSchema schema, String? keyName) {
     Widget field;
+
+    final List<String> requiredFields = [
+      ...?widget.jsonSchema.requiredFields,
+      ...widget.jsonSchema.properties!.values
+          .expand((value) => (value.requiredFields ?? []) as Iterable<String>)
+    ].toList();
+
     switch (schema.type) {
       case 'object':
         field = Column(
@@ -28,7 +37,10 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           children: [
             Text(schema.title ?? ''),
             ...(schema.properties?.entries ?? []).map((entry) {
-              return buildField(entry.value, entry.key);
+              return buildField(
+                entry.value,
+                entry.key,
+              );
             })
           ],
         );
@@ -48,8 +60,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               });
             },
             validator: (value) {
-              if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
-                      false) &&
+              if (requiredFields.contains(keyName) &&
                   (value == null || value.isEmpty)) {
                 return 'Please enter your ${schema.title ?? keyName}.';
               }
@@ -57,8 +68,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               return null;
             },
           );
-        }
-        if (schema.format != null && schema.format == 'date') {
+        } else if (schema.format != null && schema.format == 'date') {
           field = TextFormField(
             controller: _dateController,
             decoration: InputDecoration(
@@ -69,8 +79,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               FocusScope.of(context).unfocus();
             },
             validator: (value) {
-              if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
-                      false) &&
+              if (requiredFields.contains(keyName) &&
                   (value == null || value.isEmpty)) {
                 return 'Please enter your ${schema.title ?? keyName}.';
               }
@@ -78,37 +87,43 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             },
             onTap: () {
               _selectDate();
+              setState(() {
+                formData[keyName ?? ''] = _dateController.text;
+              });
+            },
+          );
+        } else {
+          field = TextFormField(
+            decoration: InputDecoration(
+              labelText: schema.title ?? keyName,
+            ),
+            onTapOutside: (event) {
+              FocusScope.of(context).unfocus();
+            },
+            onChanged: (value) {
+              setState(() {
+                formData[keyName ?? ''] = value;
+              });
+            },
+            validator: (value) {
+              if (requiredFields.contains(keyName) &&
+                  (value == null || value.isEmpty)) {
+                return 'Please enter your ${schema.title ?? keyName}.';
+              }
+              if (schema.minLength != null &&
+                  value!.length < schema.minLength!) {
+                return 'Name must be at least ${schema.minLength} characters long.';
+              }
+              if (schema.maxLength != null &&
+                  value!.length > schema.maxLength!) {
+                return 'Name must not be more than ${schema.maxLength} characters long.';
+              }
+              return null;
             },
           );
         }
-        field = TextFormField(
-          decoration: InputDecoration(
-            labelText: schema.title ?? keyName,
-          ),
-          onTapOutside: (event) {
-            FocusScope.of(context).unfocus();
-          },
-          onChanged: (value) {
-            setState(() {
-              formData[keyName ?? ''] = value;
-            });
-          },
-          validator: (value) {
-            if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
-                    false) &&
-                (value == null || value.isEmpty)) {
-              return 'Please enter your ${schema.title ?? keyName}.';
-            }
-            if (schema.minLength != null && value!.length < schema.minLength!) {
-              return 'Name must be at least ${schema.minLength} characters long.';
-            }
-            if (schema.maxLength != null && value!.length > schema.maxLength!) {
-              return 'Name must not be more than ${schema.maxLength} characters long.';
-            }
-            return null;
-          },
-        );
-      case 'integer' || 'number':
+      case 'integer':
+      case 'number':
         field = TextFormField(
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
@@ -124,8 +139,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             });
           },
           validator: (value) {
-            if ((widget.jsonSchema.requiredFields?.contains(keyName) ??
-                    false) &&
+            if (requiredFields.contains(keyName) &&
                 (value == null || value.isEmpty)) {
               return 'Please enter your ${schema.title ?? keyName}.';
             }
@@ -150,8 +164,9 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                 }),
           ],
         );
+      // TODO: FIX ARRAY DATA SUBMISSION AND VALIDATION
       case 'array':
-        return ArrayField(
+        field = ArrayField(
           schema: schema,
           keyName: keyName,
           onChanged: (values) {
@@ -216,13 +231,15 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                   );
                 },
               ),
-              ElevatedButton(
-                onPressed: () {
+              const Gap(),
+              Button(
+                buttonName: 'Save changes',
+                onPress: () {
                   print('Form Data: $formData');
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Processing Data'),
+                      SnackBar(
+                        content: Text('$formData'),
                       ),
                     );
                   } else {
@@ -233,8 +250,8 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                     );
                   }
                 },
-                child: const Text('Submit'),
               ),
+              const Gap(),
             ],
           ),
         ),
@@ -249,11 +266,11 @@ class ArrayField extends StatefulWidget {
   final ValueChanged<List<dynamic>>? onChanged;
 
   const ArrayField({
-    Key? key,
+    super.key,
     required this.schema,
     this.keyName,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   _ArrayFieldState createState() => _ArrayFieldState();
