@@ -5,26 +5,56 @@ class FormEngineApi {
 
   FormEngineApi(this.dio);
 
-  Future<Response?> submitForm(
-      String accessToken, Map<String, dynamic> formData) async {
-    const url = 'https://forms-engine-an7kk7zfja-as.a.run.app/form';
+  static const String baseUrl = 'https://forms-engine-an7kk7zfja-as.a.run.app';
+
+  Future<Response?> fetchFormList(String accessToken) async {
+    const url = '$baseUrl/form';
 
     final headers = {
-      'Authorization':
-          'Bearer $accessToken', // Pass the token in the Authorization header
-      'Content-Type': 'application/json', // Content type for JSON payload
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
     };
 
     try {
-      final response = await dio.post(
+      final response = await dio.get(
         url,
-        data: formData, // Pass the form data as the request body
         options: Options(
           headers: headers,
         ),
       );
 
-      return response; // Return the response from the API
+      if (response.statusCode != 200) {
+        print('Error resposne: ${response.data}');
+      }
+
+      return response;
+    } catch (e) {
+      print('Error submitting form: $e');
+      return null;
+    }
+  }
+
+  Future<Response?> fetchFormFromId(String accessToken, String id) async {
+    final url = '$baseUrl/form/$id';
+
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await dio.get(
+        url,
+        options: Options(
+          headers: headers,
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        print('Error resposne: ${response.data}');
+      }
+
+      return response;
     } catch (e) {
       print('Error submitting form: $e');
       return null;

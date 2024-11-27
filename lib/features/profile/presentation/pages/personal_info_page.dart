@@ -1,12 +1,56 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
+import 'package:lendingmobile/core/model/form_model.dart';
+import 'package:lendingmobile/core/services/dio/get_access_token.dart';
+import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 import 'package:lendingmobile/features/profile/index.dart';
+import 'package:lendingmobile/features/profile/presentation/pages/profile_form_pages/form_page.dart';
 
-class PersonalInfoPage extends StatelessWidget {
+class PersonalInfoPage extends StatefulWidget {
   static route() => MaterialPageRoute(
         builder: (context) => const PersonalInfoPage(),
       );
   const PersonalInfoPage({super.key});
+
+  @override
+  State<PersonalInfoPage> createState() => _PersonalInfoPageState();
+}
+
+class _PersonalInfoPageState extends State<PersonalInfoPage> {
+  List<FormStruct> formList = [];
+
+  void fetchFormListData() async {
+    final accessToken = await getAccessToken();
+
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
+
+      final response = await formEngineApi.fetchFormList(accessToken);
+
+      if (response != null && response.statusCode == 200) {
+        List<FormStruct> updatedFormList = [];
+        for (var item in response.data) {
+          updatedFormList.add(FormStruct.fromMap(item));
+        }
+
+        setState(() {
+          formList = updatedFormList;
+        });
+        print('Form list updated: ${formList} items');
+      } else {
+        print('Failed to submit form. Status code: ${response?.data}');
+      }
+    } else {
+      print('Failed to get access token');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFormListData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,47 +215,70 @@ class PersonalInfoPage extends StatelessWidget {
                   ),
                 ),
                 const Gap(height: 8),
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: profileItems.length,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        ProfileInfoTypeWidget(
-                          infoName: profileItems[index]['infoName'] as String,
-                          isVerified:
-                              profileItems[index]['isVerified'] ?? false,
-                          onTap: () => Navigator.push(
-                            context,
-                            profileItems[index]['route'] as Route,
-                          ),
-                        ),
-                        const Gap(height: 8),
-                      ],
-                    );
-                  },
-                ),
-                Container(
-                  height: 72,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Credit Score',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                // ListView.builder(
+                //   shrinkWrap: true,
+                //   physics: const NeverScrollableScrollPhysics(),
+                //   itemCount: profileItems.length,
+                //   itemBuilder: (context, index) {
+                //     return Column(
+                //       children: [
+                //         ProfileInfoTypeWidget(
+                //           infoName: profileItems[index]['infoName'] as String,
+                //           isVerified:
+                //               profileItems[index]['isVerified'] ?? false,
+                //           onTap: () => Navigator.push(
+                //             context,
+                //             profileItems[index]['route'] as Route,
+                //           ),
+                //         ),
+                //         const Gap(height: 8),
+                //       ],
+                //     );
+                //   },
+                // ),
+                formList.isEmpty
+                    ? const SizedBox.shrink()
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: formList.length,
+                        itemBuilder: (context, index) {
+                          String id = formList[index].id;
+                          String infoName = formList[index].name;
+                          return Column(
+                            children: [
+                              ProfileInfoTypeWidget(
+                                infoName: infoName,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  FormPage.route(id),
+                                ),
+                              ),
+                              const Gap(height: 8),
+                            ],
+                          );
+                        },
                       ),
-                    ],
-                  ),
-                ),
+                // Container(
+                //   height: 72,
+                //   padding: const EdgeInsets.symmetric(
+                //     horizontal: 16,
+                //   ),
+                //   decoration: BoxDecoration(
+                //     color: Colors.white,
+                //     borderRadius: BorderRadius.circular(8),
+                //   ),
+                //   child: const Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(
+                //         'Credit Score',
+                //         maxLines: 2,
+                //         overflow: TextOverflow.ellipsis,
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 const Gap(height: 8),
               ],
             ),
