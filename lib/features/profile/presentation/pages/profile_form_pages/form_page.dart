@@ -1,8 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_form.dart';
-import 'package:lendingmobile/core/model/form_model.dart';
-import 'package:lendingmobile/core/model/json_schema.dart';
+import 'package:lendingmobile/core/model/form_info.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 
@@ -22,10 +21,9 @@ class FormPage extends StatefulWidget {
 }
 
 class _FormPageState extends State<FormPage> {
-  late JsonSchema schema;
-  bool isLoading = true;
+  late Future<FormInfoStruct> formInfoFuture;
 
-  void fetchFormData() async {
+  Future<FormInfoStruct> fetchFormData() async {
     final accessToken = await getAccessToken();
 
     if (accessToken != null) {
@@ -35,37 +33,53 @@ class _FormPageState extends State<FormPage> {
           await formEngineApi.fetchFormFromId(accessToken, widget.formId);
 
       if (response != null && response.statusCode == 200) {
-        print(response.data);
-        setState(() {
-          schema = JsonSchema.fromMap(response.data['fields']);
-        });
-        print(schema);
+        return FormInfoStruct.fromMap(response.data);
       } else {
-        print("Failed");
+        throw Exception('Failed to load form data');
       }
     } else {
-      print('Error');
+      throw Exception('No access token found');
     }
-    isLoading = false;
   }
 
   @override
   void initState() {
     super.initState();
-    fetchFormData();
+    formInfoFuture = fetchFormData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(schema.title ?? ''),
+    return Container(
+      color: const Color(0xfffef7ff),
+      child: FutureBuilder<FormInfoStruct>(
+        future: formInfoFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+              ),
+            );
+          } else if (snapshot.hasData) {
+            print(snapshot.data);
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(snapshot.data?.name ?? 'Form'),
+              ),
+              body: JsonSchemaForm(
+                jsonSchema: snapshot.data!.fields,
+              ),
+            );
+          } else {
+            return const Center(child: Text('No Data'));
+          }
+        },
       ),
-      body: isLoading
-          ? const CircularProgressIndicator()
-          : JsonSchemaForm(
-              jsonSchema: schema,
-            ),
     );
   }
 }
