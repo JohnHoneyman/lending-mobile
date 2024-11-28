@@ -1,9 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/model/form_model.dart';
-import 'package:lendingmobile/core/services/dio/get_access_token.dart';
-import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 import 'package:lendingmobile/features/profile/presentation/pages/profile_form_pages/form_page.dart';
 
@@ -20,69 +17,69 @@ class PersonalInfoPage extends StatefulWidget {
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
   List<FormStruct> formList = [];
 
-  void fetchFormListData() async {
-    final accessToken = await getAccessToken();
+  // void fetchFormListData() async {
+  //   final accessToken = await getAccessToken();
 
-    if (accessToken != null) {
-      final formEngineApi = FormEngineApi(Dio());
+  //   if (accessToken != null) {
+  //     final formEngineApi = FormEngineApi(Dio());
 
-      final response = await formEngineApi.fetchFormList(accessToken);
+  //     final response = await formEngineApi.fetchFormList(accessToken);
 
-      if (response != null && response.statusCode == 200) {
-        List<FormStruct> updatedFormList = [];
-        for (var item in response.data) {
-          updatedFormList.add(FormStruct.fromMap(item));
-        }
+  //     if (response != null && response.statusCode == 200) {
+  //       List<FormStruct> updatedFormList = [];
+  //       for (var item in response.data) {
+  //         updatedFormList.add(FormStruct.fromMap(item));
+  //       }
 
-        setState(() {
-          formList = updatedFormList;
-        });
-        print('Form list updated: ${formList} items');
-      } else {
-        print('Failed to submit form. Status code: ${response?.data}');
-      }
-    } else {
-      print('Failed to get access token');
-    }
-  }
+  //       setState(() {
+  //         formList = updatedFormList;
+  //       });
+  //       print('Form list updated: ${formList} items');
+  //     } else {
+  //       print('Failed to submit form. Status code: ${response?.data}');
+  //     }
+  //   } else {
+  //     print('Failed to get access token');
+  //   }
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    fetchFormListData();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   fetchFormListData();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final profileItems = [
       {
         'infoName': 'Personal Information',
-        'route': PersonalInformationFormPage.route(),
+        'id': '967ae16c-b3b7-469c-a302-626fc75de5e2',
       },
       {
         'infoName': 'Valid IDs',
-        'route': ValidIdsFormPage.route(),
+        'id': 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
       },
       {
         'infoName': 'Residential Address',
-        'route': ResidentialAddressPage.route(),
+        'id': '7806b593-73f7-449b-af21-9920dd1b36f4',
       },
       {
         'infoName': 'Proof of Income',
-        'route': ProofOfIncomeFormsPage.route(),
+        'id': '533e8c38-4f0f-439c-aa5a-79d84a135262',
         'isVerified': true,
       },
       {
         'infoName': 'Existing Loans (if any)',
-        'route': FinancialObligationsFormPage.route(),
+        'id': 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
       },
       {
         'infoName': 'Credit Cards (if any)',
-        'route': ActiveCreditCardFormPage.route(),
+        'id': 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
       },
       {
         'infoName': 'Recurring monthly expenses (if any)',
-        'route': RecurringMonthlyExpenses.route(),
+        'id': '8422a26f-f40a-47ba-9493-9f17f3d84e05',
       },
     ];
 
@@ -215,50 +212,51 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   ),
                 ),
                 const Gap(height: 8),
-                // ListView.builder(
-                //   shrinkWrap: true,
-                //   physics: const NeverScrollableScrollPhysics(),
-                //   itemCount: profileItems.length,
-                //   itemBuilder: (context, index) {
-                //     return Column(
-                //       children: [
-                //         ProfileInfoTypeWidget(
-                //           infoName: profileItems[index]['infoName'] as String,
-                //           isVerified:
-                //               profileItems[index]['isVerified'] ?? false,
-                //           onTap: () => Navigator.push(
-                //             context,
-                //             profileItems[index]['route'] as Route,
-                //           ),
-                //         ),
-                //         const Gap(height: 8),
-                //       ],
-                //     );
-                //   },
-                // ),
-                formList.isEmpty
-                    ? const SizedBox.shrink()
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: formList.length,
-                        itemBuilder: (context, index) {
-                          String id = formList[index].id;
-                          String infoName = formList[index].name;
-                          return Column(
-                            children: [
-                              ProfileInfoTypeWidget(
-                                infoName: infoName,
-                                onTap: () => Navigator.push(
-                                  context,
-                                  FormPage.route(id),
-                                ),
-                              ),
-                              const Gap(height: 8),
-                            ],
-                          );
-                        },
-                      ),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: profileItems.length,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        ProfileInfoTypeWidget(
+                          infoName: profileItems[index]['infoName'] as String,
+                          isVerified:
+                              (profileItems[index] as Map)['isVerified'] ??
+                                  false,
+                          onTap: () => Navigator.push(
+                            context,
+                            FormPage.route((profileItems[index] as Map)['id']),
+                          ),
+                        ),
+                        const Gap(height: 8),
+                      ],
+                    );
+                  },
+                ),
+                // formList.isEmpty
+                //     ? const SizedBox.shrink()
+                //     : ListView.builder(
+                //         shrinkWrap: true,
+                //         physics: const NeverScrollableScrollPhysics(),
+                //         itemCount: formList.length,
+                //         itemBuilder: (context, index) {
+                //           String id = formList[index].id;
+                //           String infoName = formList[index].name;
+                //           return Column(
+                //             children: [
+                //               ProfileInfoTypeWidget(
+                //                 infoName: infoName,
+                //                 onTap: () => Navigator.push(
+                //                   context,
+                //                   FormPage.route(id),
+                //                 ),
+                //               ),
+                //               const Gap(height: 8),
+                //             ],
+                //           );
+                //         },
+                //       ),
                 // Container(
                 //   height: 72,
                 //   padding: const EdgeInsets.symmetric(
