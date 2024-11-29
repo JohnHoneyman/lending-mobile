@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lendingmobile/core/common/widgets/button.dart';
 import 'package:lendingmobile/core/common/widgets/gap.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_date_picker_widget.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_dropdown_form_field_widget.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_text_form_field_widget.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
 
 class JsonSchemaForm extends StatefulWidget {
@@ -24,8 +27,6 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> formData = {};
 
-  final TextEditingController _dateController = TextEditingController();
-
   Widget buildField(JsonSchema schema, String? keyName, String? rootProperty) {
     Widget field;
 
@@ -34,6 +35,17 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
       ...widget.jsonSchema.properties!.values
           .expand((value) => (value.requiredFields ?? []) as Iterable<String>)
     ].toList();
+
+    void updateFormData(String value) {
+      setState(() {
+        if (rootProperty != null) {
+          formData[rootProperty] ??= {};
+          formData[rootProperty]?[keyName ?? ''] = value;
+        } else {
+          formData[keyName ?? ''] = value;
+        }
+      });
+    }
 
     switch (schema.type) {
       case 'object':
@@ -51,105 +63,26 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           ],
         );
       case 'string':
-        if (schema.pattern != null) {
-          print('${schema.title ?? keyName} has pattern!');
-        }
         if (schema.enumerated != null) {
-          field = DropdownButtonFormField<String>(
-            decoration: InputDecoration(labelText: schema.title ?? keyName),
-            items: schema.enumerated?.map((value) {
-              return DropdownMenuItem(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                if (rootProperty != null) {
-                  formData[rootProperty] ??= {};
-                  formData[rootProperty]?[keyName ?? ''] = value;
-                } else {
-                  formData[keyName ?? ''] = value;
-                }
-              });
-            },
-            validator: (value) {
-              if (requiredFields.contains(keyName) &&
-                  (value == null || value.isEmpty)) {
-                return 'Please enter your ${schema.title ?? keyName}.';
-              }
-
-              return null;
-            },
+          field = FormBuilderDropdownFormFieldWidget(
+            jsonSchema: schema,
+            keyName: keyName,
+            onChanged: updateFormData,
+            requiredFields: requiredFields,
           );
         } else if (schema.format != null && schema.format == 'date') {
-          field = TextFormField(
-            controller: _dateController,
-            decoration: InputDecoration(
-              labelText: schema.title ?? keyName,
-            ),
-            readOnly: true,
-            onTapOutside: (event) {
-              FocusScope.of(context).unfocus();
-            },
-            validator: (value) {
-              if (requiredFields.contains(keyName) &&
-                  (value == null || value.isEmpty)) {
-                return 'Please enter your ${schema.title ?? keyName}.';
-              }
-              return null;
-            },
-            onTap: () {
-              _selectDate();
-              setState(() {
-                if (rootProperty != null) {
-                  formData[rootProperty] ??= {};
-                  formData[rootProperty]?[keyName ?? ''] = _dateController.text;
-                } else {
-                  formData[keyName ?? ''] = _dateController.text;
-                }
-              });
-            },
+          field = FormBuilderDatePickerWidget(
+            jsonSchema: schema,
+            keyName: keyName,
+            onChanged: updateFormData,
+            requiredFields: requiredFields,
           );
         } else {
-          field = TextFormField(
-            decoration: InputDecoration(
-              labelText: schema.title ?? keyName,
-            ),
-            onTapOutside: (event) {
-              FocusScope.of(context).unfocus();
-            },
-            onChanged: (value) {
-              setState(() {
-                if (rootProperty != null) {
-                  formData[rootProperty] ??= {};
-                  formData[rootProperty]?[keyName ?? ''] = value;
-                } else {
-                  formData[keyName ?? ''] = value;
-                }
-              });
-            },
-            validator: (value) {
-              if (requiredFields.contains(keyName) &&
-                  (value == null || value.isEmpty)) {
-                return 'Please enter your ${schema.title ?? keyName}.';
-              }
-              if (schema.minLength != null &&
-                  value!.length < schema.minLength!) {
-                return 'Name must be at least ${schema.minLength} characters long.';
-              }
-              if (schema.maxLength != null &&
-                  value!.length > schema.maxLength!) {
-                return 'Name must not be more than ${schema.maxLength} characters long.';
-              }
-              if (value!.isNotEmpty &&
-                  schema.pattern != null &&
-                  !RegExp(schema.pattern!).hasMatch(value)) {
-                return 'Please enter a valid ${schema.title ?? keyName}.';
-              }
-
-              return null;
-            },
+          field = FormBuilderTextFormFieldWidget(
+            jsonSchema: schema,
+            keyName: keyName,
+            onChanged: updateFormData,
+            requiredFields: requiredFields,
           );
         }
       case 'integer':
@@ -238,24 +171,8 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
     );
   }
 
-  Future<void> _selectDate() async {
-    DateTime? selectedDate = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-
-    if (selectedDate != null) {
-      setState(() {
-        _dateController.text = selectedDate.toString().split(' ')[0];
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    print(widget.jsonSchema);
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
