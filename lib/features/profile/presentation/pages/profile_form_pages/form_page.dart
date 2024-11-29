@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lendingmobile/core/common/config/keycloak_config.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_form.dart';
 import 'package:lendingmobile/core/model/form_info.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
@@ -42,6 +43,32 @@ class _FormPageState extends State<FormPage> {
     }
   }
 
+  void submitData(Map<String, dynamic> data) async {
+    final accessToken = await getAccessToken();
+
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
+      final FormInfoStruct formInfo = await formInfoFuture;
+      Map<String, dynamic> formattedData = {
+        'data': data,
+        'formVersion': formInfo.versionID,
+        'userID': keycloakWrapper
+            .tokenResponse?.tokenAdditionalParameters?['session_state'],
+      };
+
+      final response =
+          await formEngineApi.submitDataToForm(accessToken, formattedData);
+
+      if (response != null && response.statusCode == 200) {
+        print('Success! $response');
+      } else {
+        print('Failed! $response');
+      }
+    } else {
+      throw Exception('No access token found');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,13 +93,13 @@ class _FormPageState extends State<FormPage> {
               ),
             );
           } else if (snapshot.hasData) {
-            print(snapshot.data);
             return Scaffold(
               appBar: AppBar(
                 title: Text(snapshot.data?.name ?? 'Form'),
               ),
               body: JsonSchemaForm(
                 jsonSchema: snapshot.data!.fields,
+                onSubmit: submitData,
               ),
             );
           } else {

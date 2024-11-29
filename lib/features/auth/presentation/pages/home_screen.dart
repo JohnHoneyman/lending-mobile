@@ -42,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           final name = snapshot.data?['name'];
           log(keycloakWrapper.accessToken!);
+          log(keycloakWrapper.toString());
+          log(snapshot.data.toString());
           return SafeArea(
             child: RefreshIndicator(
               onRefresh: _onPullToRefresh,

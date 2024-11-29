@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 
 class FormEngineApi {
@@ -55,6 +57,40 @@ class FormEngineApi {
       }
 
       return response;
+    } catch (e) {
+      print('Error submitting form: $e');
+      return null;
+    }
+  }
+
+  Future<Response?> submitDataToForm(
+    String accessToken,
+    Map<String, dynamic> data,
+  ) async {
+    const url = '$baseUrl/formdata';
+
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      print(jsonEncode(data));
+      final response = await dio.post(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          headers: headers,
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Sucess! Response: $response');
+        return response;
+      } else {
+        print('Error response: ${response.statusCode}, ${response.data}');
+        return null;
+      }
     } catch (e) {
       print('Error submitting form: $e');
       return null;

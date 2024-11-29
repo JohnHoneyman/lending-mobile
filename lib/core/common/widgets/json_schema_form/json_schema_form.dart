@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lendingmobile/core/common/widgets/button.dart';
@@ -6,9 +8,12 @@ import 'package:lendingmobile/core/model/json_schema.dart';
 
 class JsonSchemaForm extends StatefulWidget {
   final JsonSchema jsonSchema;
+  final Function(Map<String, dynamic>) onSubmit;
+
   const JsonSchemaForm({
     super.key,
     required this.jsonSchema,
+    required this.onSubmit,
   });
 
   @override
@@ -21,7 +26,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
 
   final TextEditingController _dateController = TextEditingController();
 
-  Widget buildField(JsonSchema schema, String? keyName) {
+  Widget buildField(JsonSchema schema, String? keyName, String? rootProperty) {
     Widget field;
 
     final List<String> requiredFields = [
@@ -35,11 +40,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
         field = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(schema.title ?? ''),
+            Text(schema.title ?? keyName ?? ''),
             ...(schema.properties?.entries ?? []).map((entry) {
               return buildField(
                 entry.value,
                 entry.key,
+                keyName,
               );
             })
           ],
@@ -56,7 +62,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             }).toList(),
             onChanged: (value) {
               setState(() {
-                formData[keyName ?? ''] = value;
+                if (rootProperty != null) {
+                  formData[rootProperty] ??= {};
+                  formData[rootProperty]?[keyName ?? ''] = value;
+                } else {
+                  formData[keyName ?? ''] = value;
+                }
               });
             },
             validator: (value) {
@@ -88,7 +99,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             onTap: () {
               _selectDate();
               setState(() {
-                formData[keyName ?? ''] = _dateController.text;
+                if (rootProperty != null) {
+                  formData[rootProperty] ??= {};
+                  formData[rootProperty]?[keyName ?? ''] = _dateController.text;
+                } else {
+                  formData[keyName ?? ''] = _dateController.text;
+                }
               });
             },
           );
@@ -102,7 +118,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             },
             onChanged: (value) {
               setState(() {
-                formData[keyName ?? ''] = value;
+                if (rootProperty != null) {
+                  formData[rootProperty] ??= {};
+                  formData[rootProperty]?[keyName ?? ''] = value;
+                } else {
+                  formData[keyName ?? ''] = value;
+                }
               });
             },
             validator: (value) {
@@ -135,7 +156,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
           onChanged: (value) {
             setState(() {
-              formData[keyName ?? ''] = int.tryParse(value);
+              if (rootProperty != null) {
+                formData[rootProperty] ??= {};
+                formData[rootProperty]?[keyName ?? ''] = int.tryParse(value);
+              } else {
+                formData[keyName ?? ''] = int.tryParse(value);
+              }
             });
           },
           validator: (value) {
@@ -159,7 +185,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                 activeColor: Colors.deepPurple,
                 onChanged: (bool? value) {
                   setState(() {
-                    formData[keyName ?? ''] = value ?? false;
+                    if (rootProperty != null) {
+                      formData[rootProperty] ??= {};
+                      formData[rootProperty]?[keyName ?? ''] = value ?? false;
+                    } else {
+                      formData[keyName ?? ''] = value ?? false;
+                    }
                   });
                 }),
           ],
@@ -228,6 +259,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                   return buildField(
                     entry.value,
                     entry.key,
+                    null,
                   );
                 },
               ),
@@ -235,8 +267,10 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               Button(
                 buttonName: 'Save changes',
                 onPress: () {
-                  print('Form Data: $formData');
+                  print(jsonEncode(formData));
                   if (_formKey.currentState!.validate()) {
+                    widget.onSubmit(formData);
+
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('$formData'),

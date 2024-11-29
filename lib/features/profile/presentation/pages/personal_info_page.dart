@@ -55,31 +55,51 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
       {
         'infoName': 'Personal Information',
         'id': '967ae16c-b3b7-469c-a302-626fc75de5e2',
+        'propertyName': ['personalIdentification'],
       },
       {
         'infoName': 'Valid IDs',
         'id': 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
+        'propertyName': ['validId\'s'],
       },
       {
         'infoName': 'Residential Address',
         'id': '7806b593-73f7-449b-af21-9920dd1b36f4',
+        'propertyName': ['residentialAddress'],
       },
       {
         'infoName': 'Proof of Income',
         'id': '533e8c38-4f0f-439c-aa5a-79d84a135262',
+        'propertyName': [
+          'proofOfIncome',
+          'employer\'sInfo',
+          'employmentDetails'
+        ],
         'isVerified': true,
       },
       {
         'infoName': 'Existing Loans (if any)',
         'id': 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
+        'propertyName': [''],
       },
       {
         'infoName': 'Credit Cards (if any)',
         'id': 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
+        'propertyName': [
+          'creditCardIssuer',
+          'creditLimit',
+          'currentBalance',
+          'minimumMonthlyPayment'
+        ],
       },
       {
         'infoName': 'Recurring monthly expenses (if any)',
         'id': '8422a26f-f40a-47ba-9493-9f17f3d84e05',
+        'propertyName': [
+          'monthlyRentOrMortgage',
+          'totalMonthlyUtilityBills',
+          'otherPaymentExpenses'
+        ],
       },
     ];
 
@@ -234,49 +254,6 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     );
                   },
                 ),
-                // formList.isEmpty
-                //     ? const SizedBox.shrink()
-                //     : ListView.builder(
-                //         shrinkWrap: true,
-                //         physics: const NeverScrollableScrollPhysics(),
-                //         itemCount: formList.length,
-                //         itemBuilder: (context, index) {
-                //           String id = formList[index].id;
-                //           String infoName = formList[index].name;
-                //           return Column(
-                //             children: [
-                //               ProfileInfoTypeWidget(
-                //                 infoName: infoName,
-                //                 onTap: () => Navigator.push(
-                //                   context,
-                //                   FormPage.route(id),
-                //                 ),
-                //               ),
-                //               const Gap(height: 8),
-                //             ],
-                //           );
-                //         },
-                //       ),
-                // Container(
-                //   height: 72,
-                //   padding: const EdgeInsets.symmetric(
-                //     horizontal: 16,
-                //   ),
-                //   decoration: BoxDecoration(
-                //     color: Colors.white,
-                //     borderRadius: BorderRadius.circular(8),
-                //   ),
-                //   child: const Row(
-                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //     children: [
-                //       Text(
-                //         'Credit Score',
-                //         maxLines: 2,
-                //         overflow: TextOverflow.ellipsis,
-                //       ),
-                //     ],
-                //   ),
-                // ),
                 const Gap(height: 8),
               ],
             ),
