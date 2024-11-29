@@ -51,6 +51,9 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           ],
         );
       case 'string':
+        if (schema.pattern != null) {
+          print('${schema.title ?? keyName} has pattern!');
+        }
         if (schema.enumerated != null) {
           field = DropdownButtonFormField<String>(
             decoration: InputDecoration(labelText: schema.title ?? keyName),
@@ -139,6 +142,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                   value!.length > schema.maxLength!) {
                 return 'Name must not be more than ${schema.maxLength} characters long.';
               }
+              if (value!.isNotEmpty &&
+                  schema.pattern != null &&
+                  !RegExp(schema.pattern!).hasMatch(value)) {
+                return 'Please enter a valid ${schema.title ?? keyName}.';
+              }
+
               return null;
             },
           );
@@ -246,6 +255,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.jsonSchema);
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
