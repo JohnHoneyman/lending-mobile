@@ -3,6 +3,8 @@ import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/constants/constants.dart';
 import 'package:lendingmobile/features/auth/index.dart';
 
+import 'features/profile/presentation/pages/profile_form_pages/form_page.dart';
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   keycloakWrapper.initialize();
@@ -20,17 +22,20 @@ class LendingApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: StreamBuilder<bool>(
-        stream: keycloakWrapper.authenticationStream,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const LoadingScreen();
-          } else if (snapshot.data!) {
-            return const HomeScreen();
-          } else {
-            return const LoginScreen();
-          }
-        },
+      // home: StreamBuilder<bool>(
+      //   stream: keycloakWrapper.authenticationStream,
+      //   builder: (context, snapshot) {
+      //     if (snapshot.connectionState == ConnectionState.waiting) {
+      //       return const LoadingScreen();
+      //     } else if (snapshot.data!) {
+      //       return const HomeScreen();
+      //     } else {
+      //       return const LoginScreen();
+      //     }
+      //   },
+      // ),
+      home: const FormPage(
+        formId: '',
       ),
     );
   }

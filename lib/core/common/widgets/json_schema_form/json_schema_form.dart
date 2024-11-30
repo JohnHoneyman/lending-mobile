@@ -4,10 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lendingmobile/core/common/widgets/button.dart';
 import 'package:lendingmobile/core/common/widgets/gap.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_checkbox_widget.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_date_picker_widget.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_dropdown_form_field_widget.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_number_field_widget.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_text_form_field_widget.dart';
 import 'package:lendingmobile/core/model/json_schema.dart';
+
+sealed class FormValue {
+  const FormValue();
+}
+
+class StringValue extends FormValue {
+  final String value;
+  const StringValue(this.value);
+}
+
+class BoolValue extends FormValue {
+  final bool value;
+  const BoolValue(this.value);
+}
 
 class JsonSchemaForm extends StatefulWidget {
   final JsonSchema jsonSchema;
@@ -36,13 +52,19 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           .expand((value) => (value.requiredFields ?? []) as Iterable<String>)
     ].toList();
 
-    void updateFormData(String value) {
+    void updateFormData(FormValue value) {
+      Object? parsedValue = value is StringValue
+          ? int.tryParse(value.value) ?? value.value
+          : value is BoolValue
+              ? value.value
+              : value;
+
       setState(() {
         if (rootProperty != null) {
           formData[rootProperty] ??= {};
-          formData[rootProperty]?[keyName ?? ''] = value;
+          formData[rootProperty]?[keyName ?? ''] = parsedValue;
         } else {
-          formData[keyName ?? ''] = value;
+          formData[keyName ?? ''] = parsedValue;
         }
       });
     }
@@ -67,55 +89,39 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           field = FormBuilderDropdownFormFieldWidget(
             jsonSchema: schema,
             keyName: keyName,
-            onChanged: updateFormData,
+            onChanged: (value) {
+              updateFormData(StringValue(value));
+            },
             requiredFields: requiredFields,
           );
         } else if (schema.format != null && schema.format == 'date') {
           field = FormBuilderDatePickerWidget(
             jsonSchema: schema,
             keyName: keyName,
-            onChanged: updateFormData,
+            onChanged: (value) {
+              updateFormData(StringValue(value));
+            },
             requiredFields: requiredFields,
           );
         } else {
           field = FormBuilderTextFormFieldWidget(
             jsonSchema: schema,
             keyName: keyName,
-            onChanged: updateFormData,
+            onChanged: (value) {
+              updateFormData(StringValue(value));
+            },
             requiredFields: requiredFields,
           );
         }
       case 'integer':
       case 'number':
-        field = TextFormField(
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: InputDecoration(
-            labelText: schema.title ?? keyName,
-          ),
-          onTapOutside: (event) {
-            FocusScope.of(context).unfocus();
-          },
+        field = FormBuilderNumberFieldWidget(
+          jsonSchema: schema,
+          keyName: keyName,
           onChanged: (value) {
-            setState(() {
-              if (rootProperty != null) {
-                formData[rootProperty] ??= {};
-                formData[rootProperty]?[keyName ?? ''] = int.tryParse(value);
-              } else {
-                formData[keyName ?? ''] = int.tryParse(value);
-              }
-            });
+            updateFormData(StringValue(value));
           },
-          validator: (value) {
-            if (requiredFields.contains(keyName) &&
-                (value == null || value.isEmpty)) {
-              return 'Please enter your ${schema.title ?? keyName}.';
-            }
-            if (schema.minimum != null && int.parse(value!) < schema.minimum!) {
-              return '${schema.title ?? keyName} must be at least ${schema.minimum}.';
-            }
-            return null;
-          },
+          requiredFields: requiredFields,
         );
       case 'boolean':
         final bool currentValue = formData[keyName ?? ''] ?? false;
@@ -136,6 +142,13 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                   });
                 }),
           ],
+        );
+        field = FormBuilderCheckboxWidget(
+          jsonSchema: schema,
+          onChanged: (value) {
+            updateFormData(BoolValue(value));
+          },
+          requiredFields: requiredFields,
         );
       // TODO: FIX ARRAY DATA SUBMISSION AND VALIDATION
       case 'array':
