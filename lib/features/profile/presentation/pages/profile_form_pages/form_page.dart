@@ -85,7 +85,7 @@ class _FormPageState extends State<FormPage> {
         color: const Color(0xfffef7ff),
         child: JsonSchemaForm(
           jsonSchema: JsonSchema.fromMap(
-            JsonSchemaData.personalInformation,
+            JsonSchemaData.existingLoansFinancialObligations,
           ),
           onSubmit: submitData,
         ),
