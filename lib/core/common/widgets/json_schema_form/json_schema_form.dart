@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/widgets/button.dart';
 import 'package:lendingmobile/core/common/widgets/gap.dart';
+import 'package:lendingmobile/core/common/widgets/json_schema_form/utils/parse_json_schema_type.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_array_field_widget.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_checkbox_widget.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/widgets/form_builder_date_picker_widget.dart';
@@ -73,8 +74,8 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
       });
     }
 
-    switch (schema.type) {
-      case 'object':
+    switch (parseJsonSchemaType(schema.type)) {
+      case JsonSchemaType.object:
         field = Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -88,7 +89,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             })
           ],
         );
-      case 'string':
+      case JsonSchemaType.string:
         if (schema.enumerated != null) {
           field = FormBuilderDropdownFormFieldWidget(
             jsonSchema: schema,
@@ -117,8 +118,8 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             requiredFields: requiredFields,
           );
         }
-      case 'integer':
-      case 'number':
+      case JsonSchemaType.integer:
+      case JsonSchemaType.number:
         field = FormBuilderNumberFieldWidget(
           jsonSchema: schema,
           keyName: keyName,
@@ -127,7 +128,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
           requiredFields: requiredFields,
         );
-      case 'boolean':
+      case JsonSchemaType.boolean:
         field = FormBuilderCheckboxWidget(
           jsonSchema: schema,
           keyName: keyName,
@@ -136,7 +137,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           },
           requiredFields: requiredFields,
         );
-      case 'array':
+      case JsonSchemaType.array:
         field = FormBuilderArrayFieldWidget(
           jsonSchema: schema,
           keyName: keyName,
@@ -148,11 +149,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
             });
           },
         );
+      case JsonSchemaType.unknown:
       default:
         field = Padding(
           padding: const EdgeInsets.symmetric(vertical: 16.0),
           child: Text(
-            'Missing widget for: ${schema.type}',
+            'Missing widget for schema type: ${schema.type}',
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
