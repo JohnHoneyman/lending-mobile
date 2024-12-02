@@ -162,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         )
                       : _selectedIndex == 1
-                          ? AddLoanPage()
+                          ? const AddLoanPage()
                           : ProfilePage(snapshotData: snapshot),
                 ),
               ),

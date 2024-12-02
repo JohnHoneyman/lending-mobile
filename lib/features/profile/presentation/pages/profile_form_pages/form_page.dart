@@ -49,6 +49,8 @@ class _FormPageState extends State<FormPage> {
     if (accessToken != null) {
       final formEngineApi = FormEngineApi(Dio());
       final FormInfoStruct formInfo = await formInfoFuture;
+      print(keycloakWrapper
+          .tokenResponse?.tokenAdditionalParameters?['session_state']);
       Map<String, dynamic> formattedData = {
         'data': data,
         'formVersion': formInfo.versionID,

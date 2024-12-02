@@ -3,8 +3,6 @@ import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/constants/constants.dart';
 import 'package:lendingmobile/features/auth/index.dart';
 
-import 'features/profile/presentation/pages/profile_form_pages/form_page.dart';
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   keycloakWrapper.initialize();
