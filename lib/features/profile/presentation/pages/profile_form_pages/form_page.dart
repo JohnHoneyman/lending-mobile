@@ -2,9 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/config/keycloak_config.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_form.dart';
-import 'package:lendingmobile/core/json_schema_data/json_schema_data.dart';
 import 'package:lendingmobile/core/model/form_info.dart';
-import 'package:lendingmobile/core/model/json_schema.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 
@@ -74,50 +72,39 @@ class _FormPageState extends State<FormPage> {
   @override
   void initState() {
     super.initState();
+
     formInfoFuture = fetchFormData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Container(
-        color: const Color(0xfffef7ff),
-        child: JsonSchemaForm(
-          jsonSchema: JsonSchema.fromMap(
-            JsonSchemaData.existingLoansFinancialObligations,
-          ),
-          onSubmit: submitData,
-        ),
-        // child: FutureBuilder<FormInfoStruct>(
-        //   future: formInfoFuture,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.connectionState == ConnectionState.waiting) {
-        //       return const Center(
-        //         child: CircularProgressIndicator(),
-        //       );
-        //     } else if (snapshot.hasError) {
-        //       return Center(
-        //         child: Text(
-        //           'Error: ${snapshot.error}',
-        //         ),
-        //       );
-        //     } else if (snapshot.hasData) {
-        //       return Scaffold(
-        //         appBar: AppBar(
-        //           title: Text(snapshot.data?.name ?? 'Form'),
-        //         ),
-        //         body: JsonSchemaForm(
-        //           jsonSchema: snapshot.data!.fields,
-        //           onSubmit: submitData,
-        //         ),
-        //       );
-        //     } else {
-        //       return const Center(child: Text('No Data'));
-        //     }
-        //   },
-        // ),
-      ),
+    return FutureBuilder<FormInfoStruct>(
+      future: formInfoFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              'Error: ${snapshot.error}',
+            ),
+          );
+        } else if (snapshot.hasData) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(snapshot.data?.name ?? 'Form'),
+            ),
+            body: JsonSchemaForm(
+              jsonSchema: snapshot.data!.fields,
+              onSubmit: submitData,
+            ),
+          );
+        } else {
+          return const Center(child: Text('No Data'));
+        }
+      },
     );
   }
 }

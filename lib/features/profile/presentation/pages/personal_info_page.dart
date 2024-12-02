@@ -1,6 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/model/form_model.dart';
+import 'package:lendingmobile/core/services/dio/get_access_token.dart';
+import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 import 'package:lendingmobile/features/profile/presentation/pages/profile_form_pages/form_page.dart';
 
@@ -17,37 +20,37 @@ class PersonalInfoPage extends StatefulWidget {
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
   List<FormStruct> formList = [];
 
-  // void fetchFormListData() async {
-  //   final accessToken = await getAccessToken();
+  void fetchFormListData() async {
+    final accessToken = await getAccessToken();
 
-  //   if (accessToken != null) {
-  //     final formEngineApi = FormEngineApi(Dio());
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
 
-  //     final response = await formEngineApi.fetchFormList(accessToken);
+      final response = await formEngineApi.fetchFormList(accessToken);
 
-  //     if (response != null && response.statusCode == 200) {
-  //       List<FormStruct> updatedFormList = [];
-  //       for (var item in response.data) {
-  //         updatedFormList.add(FormStruct.fromMap(item));
-  //       }
+      if (response != null && response.statusCode == 200) {
+        List<FormStruct> updatedFormList = [];
+        for (var item in response.data) {
+          updatedFormList.add(FormStruct.fromMap(item));
+        }
 
-  //       setState(() {
-  //         formList = updatedFormList;
-  //       });
-  //       print('Form list updated: ${formList} items');
-  //     } else {
-  //       print('Failed to submit form. Status code: ${response?.data}');
-  //     }
-  //   } else {
-  //     print('Failed to get access token');
-  //   }
-  // }
+        setState(() {
+          formList = updatedFormList;
+        });
+        print('Form list updated: ${formList} items');
+      } else {
+        print('Failed to submit form. Status code: ${response?.data}');
+      }
+    } else {
+      print('Failed to get access token');
+    }
+  }
 
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   fetchFormListData();
-  // }
+  @override
+  void initState() {
+    super.initState();
+    fetchFormListData();
+  }
 
   @override
   Widget build(BuildContext context) {

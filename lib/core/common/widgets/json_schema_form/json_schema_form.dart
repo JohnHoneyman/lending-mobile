@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/widgets/button.dart';
 import 'package:lendingmobile/core/common/widgets/gap.dart';
@@ -19,6 +17,11 @@ sealed class FormValue {
 class StringValue extends FormValue {
   final String value;
   const StringValue(this.value);
+}
+
+class NumberValue extends FormValue {
+  final String value;
+  const NumberValue(this.value);
 }
 
 class BoolValue extends FormValue {
@@ -59,10 +62,12 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
 
     void updateFormData(FormValue value) {
       Object? parsedValue = value is StringValue
-          ? int.tryParse(value.value) ?? value.value
-          : value is BoolValue
-              ? value.value
-              : value;
+          ? value.value
+          : value is NumberValue
+              ? int.tryParse(value.value)
+              : value is BoolValue
+                  ? value.value
+                  : value;
 
       setState(() {
         if (rootProperty != null) {
@@ -124,7 +129,7 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
           jsonSchema: schema,
           keyName: keyName,
           onChanged: (value) {
-            updateFormData(StringValue(value));
+            updateFormData(NumberValue(value));
           },
           requiredFields: requiredFields,
         );
@@ -196,7 +201,6 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               Button(
                 buttonName: 'Save changes',
                 onPress: () {
-                  print(jsonEncode(formData));
                   if (_formKey.currentState!.validate()) {
                     widget.onSubmit(formData);
 

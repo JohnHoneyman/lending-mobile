@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -72,21 +71,26 @@ class FormInfoStruct {
   }
 
   factory FormInfoStruct.fromMap(Map<String, dynamic> map) {
-    return FormInfoStruct(
-      createdAt: map['createdAt'] as String,
-      description: map['description'] as String,
-      id: map['id'] as String,
-      name: map['name'] as String,
-      updatedAt: map['updatedAt'] as String,
-      version: map['version'] as String,
-      versionID: map['versionID'] as String,
-      fields: JsonSchema.fromMap(map['fields'] as Map<String, dynamic>),
-      uiSchema:
-          Map<String, dynamic>.from((map['uiSchema'] as Map<String, dynamic>)),
-      permissionSchema: Map<String, dynamic>.from(
-        (map['permissionSchema'] as Map<String, dynamic>),
-      ),
-    );
+    try {
+      final Map<String, dynamic> data = map['data'] ?? map;
+      return FormInfoStruct(
+        createdAt: data['createdAt'] as String,
+        description: data['description'] as String,
+        id: data['id'] as String,
+        name: data['name'] as String,
+        updatedAt: data['updatedAt'] as String,
+        version: data['version'] as String,
+        versionID: data['versionID'] as String,
+        fields: JsonSchema.fromMap(data['fields'] as Map<String, dynamic>),
+        uiSchema: Map<String, dynamic>.from(
+            (data['uiSchema'] as Map<String, dynamic>)),
+        permissionSchema: Map<String, dynamic>.from(
+          (data['permissionSchema'] as Map<String, dynamic>),
+        ),
+      );
+    } catch (e) {
+      throw 'Error mapping: $e';
+    }
   }
 
   String toJson() => json.encode(toMap());
