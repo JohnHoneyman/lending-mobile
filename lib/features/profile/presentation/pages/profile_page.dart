@@ -20,8 +20,6 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final name = snapshotData.data?['name'] ?? '';
-    final givenName = snapshotData.data?['given_name'] ?? '';
-    final familyName = snapshotData.data?['family_name'] ?? '';
     final email = snapshotData.data?['email'] ?? '';
     return Container(
       decoration: const BoxDecoration(color: Color(0xff65558F)),
