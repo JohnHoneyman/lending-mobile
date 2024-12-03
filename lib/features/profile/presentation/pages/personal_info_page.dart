@@ -249,8 +249,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                   false,
                           onTap: () => Navigator.push(
                             context,
-                            FormPage.route((profileItems[index] as Map)['id']),
+                            FormPage.route(''),
                           ),
+                          // onTap: () => Navigator.push(
+                          //   context,
+                          //   FormPage.route((profileItems[index] as Map)['id']),
+                          // ),
                         ),
                         const Gap(height: 8),
                       ],

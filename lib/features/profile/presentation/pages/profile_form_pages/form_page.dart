@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/config/keycloak_config.dart';
 import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_form.dart';
+import 'package:lendingmobile/core/json_schema_data/json_schema_data.dart';
 import 'package:lendingmobile/core/model/form_info.dart';
+import 'package:lendingmobile/core/model/json_schema.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 
@@ -80,6 +82,16 @@ class _FormPageState extends State<FormPage> {
 
   @override
   Widget build(BuildContext context) {
+    // return Scaffold(
+    //   appBar: AppBar(
+    //     title: Text('Form'),
+    //   ),
+    //   body: JsonSchemaForm(
+    //     jsonSchema: JsonSchema.fromMap(JsonSchemaData.proofOfIncome),
+    //     onSubmit: submitData,
+    //   ),
+    // );
+
     return FutureBuilder<FormInfoStruct>(
       future: formInfoFuture,
       builder: (context, snapshot) {

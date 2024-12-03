@@ -10,7 +10,18 @@ void main() {
 }
 
 class LendingApp extends StatelessWidget {
-  const LendingApp({super.key});
+  static MaterialPageRoute route({bool isFromCalcPage = false}) =>
+      MaterialPageRoute(
+        builder: (context) => LendingApp(
+          isFromCalcPage: isFromCalcPage,
+        ),
+      );
+
+  final bool isFromCalcPage;
+  const LendingApp({
+    super.key,
+    this.isFromCalcPage = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +39,9 @@ class LendingApp extends StatelessWidget {
           } else if (snapshot.data!) {
             return const HomeScreen();
           } else {
-            return const LoginScreen();
+            return LoginScreen(
+              isFromCalcPage: isFromCalcPage,
+            );
           }
         },
       ),
