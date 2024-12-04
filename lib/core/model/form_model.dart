@@ -2,65 +2,66 @@
 import 'dart:convert';
 
 class FormStruct {
-  final String id;
   final String? code;
-  final String name;
-  final String? createdAt;
   final String? description;
-  final String? updatedAt;
+  final String formID;
+  final String? formVersionID;
+  final String name;
+  final String? version;
   final bool? isVerified;
 
   FormStruct({
-    required this.id,
     this.code,
-    required this.name,
-    this.createdAt,
     this.description,
-    this.updatedAt,
+    required this.formID,
+    this.formVersionID,
+    required this.name,
+    this.version,
     this.isVerified,
   });
 
   FormStruct copyWith({
-    String? id,
     String? code,
-    String? name,
-    String? createdAt,
     String? description,
-    String? updatedAt,
+    String? formID,
+    String? formVersionID,
+    String? name,
+    String? version,
     bool? isVerified,
   }) {
     return FormStruct(
-      id: id ?? this.id,
       code: code ?? this.code,
-      name: name ?? this.name,
-      createdAt: createdAt ?? this.createdAt,
       description: description ?? this.description,
-      updatedAt: updatedAt ?? this.updatedAt,
+      formID: formID ?? this.formID,
+      formVersionID: formVersionID ?? this.formVersionID,
+      name: name ?? this.name,
+      version: version ?? this.version,
       isVerified: isVerified ?? this.isVerified,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
-      'id': id,
       'code': code,
-      'name': name,
-      'createdAt': createdAt,
       'description': description,
-      'updatedAt': updatedAt,
+      'formID': formID,
+      'formVersionID': formVersionID,
+      'name': name,
+      'version': version,
       'isVerified': isVerified,
     };
   }
 
   factory FormStruct.fromMap(Map<String, dynamic> map) {
     return FormStruct(
-      id: map['id'] as String,
       code: map['code'] != null ? map['code'] as String : null,
-      name: map['name'] as String,
-      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
       description:
           map['description'] != null ? map['description'] as String : null,
-      updatedAt: map['updatedAt'] != null ? map['updatedAt'] as String : null,
+      formID: map['formID'] as String,
+      formVersionID:
+          map['formVersionID'] != null ? map['formVersionID'] as String : null,
+      name: map['name'] as String,
+      version: map['version'] != null ? map['version'] as String : null,
       isVerified: map['isVerified'] != null ? map['isVerified'] as bool : null,
     );
   }
@@ -72,30 +73,30 @@ class FormStruct {
 
   @override
   String toString() {
-    return 'FormStruct(id: $id, code: $code, name: $name, createdAt: $createdAt, description: $description, updatedAt: $updatedAt, isVerified: $isVerified)';
+    return 'FormStruct(code: $code, description: $description, formID: $formID, formVersionID: $formVersionID, name: $name, version: $version, isVerified: $isVerified)';
   }
 
   @override
   bool operator ==(covariant FormStruct other) {
     if (identical(this, other)) return true;
 
-    return other.id == id &&
-        other.code == code &&
-        other.name == name &&
-        other.createdAt == createdAt &&
+    return other.code == code &&
         other.description == description &&
-        other.updatedAt == updatedAt &&
+        other.formID == formID &&
+        other.formVersionID == formVersionID &&
+        other.name == name &&
+        other.version == version &&
         other.isVerified == isVerified;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^
-        code.hashCode ^
-        name.hashCode ^
-        createdAt.hashCode ^
+    return code.hashCode ^
         description.hashCode ^
-        updatedAt.hashCode ^
+        formID.hashCode ^
+        formVersionID.hashCode ^
+        name.hashCode ^
+        version.hashCode ^
         isVerified.hashCode;
   }
 }

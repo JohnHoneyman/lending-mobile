@@ -21,6 +21,8 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final name = snapshotData.data?['name'] ?? '';
     final email = snapshotData.data?['email'] ?? '';
+    final userId = snapshotData.data?['sub'] ?? '';
+
     return Container(
       decoration: const BoxDecoration(color: Color(0xff65558F)),
       child: Padding(
@@ -99,7 +101,7 @@ class ProfilePage extends StatelessWidget {
                     text: 'Personal Information',
                     icon: Icons.person_4_outlined,
                     onTap: () {
-                      Navigator.push(context, PersonalInfoPage.route());
+                      Navigator.push(context, PersonalInfoPage.route(userId));
                     },
                   ),
                   ProfileInkwell(

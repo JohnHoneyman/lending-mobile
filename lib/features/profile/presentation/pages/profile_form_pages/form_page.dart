@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/config/keycloak_config.dart';
@@ -8,13 +10,27 @@ import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 
 class FormPage extends StatefulWidget {
-  final String formId;
+  final String? userId;
+  final String formID;
+  final String formVersionID;
+  final String version;
 
-  const FormPage({super.key, required this.formId});
+  const FormPage({
+    super.key,
+    this.userId,
+    required this.formID,
+    required this.formVersionID,
+    required this.version,
+  });
 
-  static route(String formId) => MaterialPageRoute(
+  static route(String? userId, String formId, String formVersionID,
+          String version) =>
+      MaterialPageRoute(
         builder: (context) => FormPage(
-          formId: formId,
+          userId: userId ?? '',
+          formID: formId,
+          formVersionID: formVersionID,
+          version: version,
         ),
       );
 
@@ -31,11 +47,13 @@ class _FormPageState extends State<FormPage> {
     if (accessToken != null) {
       final formEngineApi = FormEngineApi(Dio());
 
-      final response =
-          await formEngineApi.fetchFormFromId(accessToken, widget.formId);
+      final response = await formEngineApi.fetchFormFromId(
+        accessToken,
+        widget.formID,
+        widget.version,
+      );
 
       if (response != null && response.statusCode == 200) {
-        print(response);
         return FormInfoStruct.fromMap(response.data);
       } else {
         throw Exception('Failed to load form data');
@@ -54,8 +72,7 @@ class _FormPageState extends State<FormPage> {
       Map<String, dynamic> formattedData = {
         'data': data,
         'formVersion': formInfo.versionID,
-        'userID': keycloakWrapper
-            .tokenResponse?.tokenAdditionalParameters?['session_state'],
+        'userID': widget.userId,
       };
 
       final response =
@@ -68,7 +85,10 @@ class _FormPageState extends State<FormPage> {
               content: Text('Successfully saved changes.'),
             ),
           );
-          Navigator.pushReplacement(context, PersonalInfoPage.route());
+          Navigator.pushReplacement(
+            context,
+            PersonalInfoPage.route(widget.userId!),
+          );
         }
       } else {
         print('Failed! $response');

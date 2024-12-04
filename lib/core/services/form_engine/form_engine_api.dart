@@ -10,8 +10,10 @@ class FormEngineApi {
 
   static String? baseUrl = dotenv.env['BASE_URL'];
 
-  Future<Response?> fetchFormList(String accessToken) async {
-    final String url = '$baseUrl/form';
+  Future<Response?> fetchFormList(
+      String accessToken, int? page, int? pageSize) async {
+    final String url =
+        '$baseUrl/api/forms?page=${page ?? 1}&pageSize=${pageSize ?? 10}';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',
@@ -27,7 +29,7 @@ class FormEngineApi {
       );
 
       if (response.statusCode != 200) {
-        print('Error resposne: ${response.data}');
+        print('Error response: ${response.data}');
       }
 
       return response;
@@ -37,8 +39,9 @@ class FormEngineApi {
     }
   }
 
-  Future<Response?> fetchFormFromId(String accessToken, String id) async {
-    final url = '$baseUrl/form/$id';
+  Future<Response?> fetchFormFromId(
+      String accessToken, String formID, String formVersion) async {
+    final url = '$baseUrl/api/forms/$formID?version=$formVersion';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',
@@ -68,7 +71,7 @@ class FormEngineApi {
     String accessToken,
     Map<String, dynamic> data,
   ) async {
-    final String url = '$baseUrl/formdata';
+    final String url = '$baseUrl/api/formdata';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',
@@ -85,7 +88,7 @@ class FormEngineApi {
       );
 
       if (response.statusCode == 200) {
-        print('Sucess! Response: $response');
+        print('Success! Response: $response');
         return response;
       } else {
         print('Error response: ${response.statusCode}, ${response.data}');
@@ -98,8 +101,9 @@ class FormEngineApi {
   }
 
   Future<Response?> fetchFormDataFromUserId(
-      String accessToken, String userId) async {
-    final url = '$baseUrl/formdata/user/$userId';
+      String accessToken, String userId, int? page, int? pageSize) async {
+    final url =
+        '$baseUrl/api/formdata/user/$userId?page=${page ?? 1}&pageSize=${pageSize ?? 10}';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',

@@ -5,14 +5,18 @@ import 'package:lendingmobile/core/model/form_data.dart';
 import 'package:lendingmobile/core/model/form_model.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
+import 'package:lendingmobile/core/utils/get_form_version_id.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 import 'package:lendingmobile/features/profile/presentation/pages/profile_form_pages/form_page.dart';
 
 class PersonalInfoPage extends StatefulWidget {
-  static route() => MaterialPageRoute(
-        builder: (context) => const PersonalInfoPage(),
+  final String userId;
+
+  const PersonalInfoPage({super.key, required this.userId});
+
+  static route(String userId) => MaterialPageRoute(
+        builder: (context) => PersonalInfoPage(userId: userId),
       );
-  const PersonalInfoPage({super.key});
 
   @override
   State<PersonalInfoPage> createState() => _PersonalInfoPageState();
@@ -22,24 +26,23 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   List<FormStruct> formList = [];
   List<FormDataStruct> formDataList = [];
 
-  void fetchFormListData() async {
+  void handleFetchFormListData() async {
     final accessToken = await getAccessToken();
 
     if (accessToken != null) {
       final formEngineApi = FormEngineApi(Dio());
 
-      final response = await formEngineApi.fetchFormList(accessToken);
+      final response = await formEngineApi.fetchFormList(accessToken, 1, 10);
 
       if (response != null && response.statusCode == 200) {
         List<FormStruct> updatedFormList = [];
-        for (var item in response.data) {
+        for (var item in response.data['data']) {
           updatedFormList.add(FormStruct.fromMap(item));
         }
 
         setState(() {
           formList = updatedFormList;
         });
-        print('Form list updated: ${formList} items');
       } else {
         print('Failed to submit form. Status code: ${response?.data}');
       }
@@ -48,16 +51,15 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     }
   }
 
-  void fetchFormDataFromUserId() async {
+  void handleFetchFormDataFromUserId() async {
     final accessToken = await getAccessToken();
 
     if (accessToken != null) {
       final formEngineApi = FormEngineApi(Dio());
-      final userId = keycloakWrapper
-          .tokenResponse?.tokenAdditionalParameters?['session_state'];
+      final userId = widget.userId;
 
-      final response =
-          await formEngineApi.fetchFormDataFromUserId(accessToken, userId);
+      final response = await formEngineApi.fetchFormDataFromUserId(
+          accessToken, userId, 1, 10);
 
       if (response != null && response.statusCode == 200) {
         List<FormDataStruct> updatedFormDataList = [];
@@ -75,44 +77,42 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   @override
   void initState() {
     super.initState();
-    fetchFormListData();
-    fetchFormDataFromUserId();
+    handleFetchFormListData();
+    handleFetchFormDataFromUserId();
   }
 
   @override
   Widget build(BuildContext context) {
     final List<FormStruct> profileItems = [
       FormStruct(
-        id: '967ae16c-b3b7-469c-a302-626fc75de5e2',
+        formID: '967ae16c-b3b7-469c-a302-626fc75de5e2',
         name: 'Personal Information',
       ),
       FormStruct(
-        id: 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
+        formID: 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
         name: 'Valid IDs',
       ),
       FormStruct(
-        id: '7806b593-73f7-449b-af21-9920dd1b36f4',
+        formID: '7806b593-73f7-449b-af21-9920dd1b36f4',
         name: 'Residential Address',
       ),
       FormStruct(
-        id: '533e8c38-4f0f-439c-aa5a-79d84a135262',
+        formID: '533e8c38-4f0f-439c-aa5a-79d84a135262',
         name: 'Proof of Income',
       ),
       FormStruct(
-        id: 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
+        formID: 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
         name: 'Existing Loans (if any)',
       ),
       FormStruct(
-        id: 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
+        formID: 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
         name: 'Credit Cards (if any)',
       ),
       FormStruct(
-        id: '8422a26f-f40a-47ba-9493-9f17f3d84e05',
+        formID: '8422a26f-f40a-47ba-9493-9f17f3d84e05',
         name: 'Recurring monthly expenses (if any)',
       ),
     ];
-
-    print(formDataList);
 
     return Scaffold(
       appBar: AppBar(
@@ -248,6 +248,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: profileItems.length,
                   itemBuilder: (context, index) {
+                    final formVersionID =
+                        getFormVersionID(profileItems[index].formID, formList);
+                    final formVersion =
+                        getFormVersion(profileItems[index].formID, formList);
+
                     return Column(
                       children: [
                         ProfileInfoTypeWidget(
@@ -255,7 +260,12 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                           isVerified: profileItems[index].isVerified ?? false,
                           onTap: () => Navigator.push(
                             context,
-                            FormPage.route(profileItems[index].id),
+                            FormPage.route(
+                              widget.userId,
+                              profileItems[index].formID,
+                              formVersionID,
+                              formVersion,
+                            ),
                           ),
                         ),
                         const Gap(height: 8),
