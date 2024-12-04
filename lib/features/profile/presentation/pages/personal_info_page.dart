@@ -81,57 +81,38 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    final profileItems = [
-      {
-        'infoName': 'Personal Information',
-        'id': '967ae16c-b3b7-469c-a302-626fc75de5e2',
-        'propertyName': ['personalIdentification'],
-      },
-      {
-        'infoName': 'Valid IDs',
-        'id': 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
-        'propertyName': ['validId\'s'],
-      },
-      {
-        'infoName': 'Residential Address',
-        'id': '7806b593-73f7-449b-af21-9920dd1b36f4',
-        'propertyName': ['residentialAddress'],
-      },
-      {
-        'infoName': 'Proof of Income',
-        'id': '533e8c38-4f0f-439c-aa5a-79d84a135262',
-        'propertyName': [
-          'proofOfIncome',
-          'employer\'sInfo',
-          'employmentDetails'
-        ],
-        'isVerified': true,
-      },
-      {
-        'infoName': 'Existing Loans (if any)',
-        'id': 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
-        'propertyName': [''],
-      },
-      {
-        'infoName': 'Credit Cards (if any)',
-        'id': 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
-        'propertyName': [
-          'creditCardIssuer',
-          'creditLimit',
-          'currentBalance',
-          'minimumMonthlyPayment'
-        ],
-      },
-      {
-        'infoName': 'Recurring monthly expenses (if any)',
-        'id': '8422a26f-f40a-47ba-9493-9f17f3d84e05',
-        'propertyName': [
-          'monthlyRentOrMortgage',
-          'totalMonthlyUtilityBills',
-          'otherPaymentExpenses'
-        ],
-      },
+    final List<FormStruct> profileItems = [
+      FormStruct(
+        id: '967ae16c-b3b7-469c-a302-626fc75de5e2',
+        name: 'Personal Information',
+      ),
+      FormStruct(
+        id: 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
+        name: 'Valid IDs',
+      ),
+      FormStruct(
+        id: '7806b593-73f7-449b-af21-9920dd1b36f4',
+        name: 'Residential Address',
+      ),
+      FormStruct(
+        id: '533e8c38-4f0f-439c-aa5a-79d84a135262',
+        name: 'Proof of Income',
+      ),
+      FormStruct(
+        id: 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
+        name: 'Existing Loans (if any)',
+      ),
+      FormStruct(
+        id: 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
+        name: 'Credit Cards (if any)',
+      ),
+      FormStruct(
+        id: '8422a26f-f40a-47ba-9493-9f17f3d84e05',
+        name: 'Recurring monthly expenses (if any)',
+      ),
     ];
+
+    print(formDataList);
 
     return Scaffold(
       appBar: AppBar(
@@ -270,13 +251,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                     return Column(
                       children: [
                         ProfileInfoTypeWidget(
-                          infoName: profileItems[index]['infoName'] as String,
-                          isVerified:
-                              (profileItems[index] as Map)['isVerified'] ??
-                                  false,
+                          infoName: profileItems[index].name,
+                          isVerified: profileItems[index].isVerified ?? false,
                           onTap: () => Navigator.push(
                             context,
-                            FormPage.route((profileItems[index] as Map)['id']),
+                            FormPage.route(profileItems[index].id),
                           ),
                         ),
                         const Gap(height: 8),

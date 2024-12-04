@@ -1,20 +1,23 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class FormStruct {
   final String id;
-  final String code;
+  final String? code;
   final String name;
-  final String createdAt;
-  final String description;
-  final String updatedAt;
+  final String? createdAt;
+  final String? description;
+  final String? updatedAt;
+  final bool? isVerified;
 
   FormStruct({
     required this.id,
-    required this.code,
+    this.code,
     required this.name,
-    required this.createdAt,
-    required this.description,
-    required this.updatedAt,
+    this.createdAt,
+    this.description,
+    this.updatedAt,
+    this.isVerified,
   });
 
   FormStruct copyWith({
@@ -24,6 +27,7 @@ class FormStruct {
     String? createdAt,
     String? description,
     String? updatedAt,
+    bool? isVerified,
   }) {
     return FormStruct(
       id: id ?? this.id,
@@ -32,28 +36,32 @@ class FormStruct {
       createdAt: createdAt ?? this.createdAt,
       description: description ?? this.description,
       updatedAt: updatedAt ?? this.updatedAt,
+      isVerified: isVerified ?? this.isVerified,
     );
   }
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
       'id': id,
-      'Code': code,
+      'code': code,
       'name': name,
       'createdAt': createdAt,
       'description': description,
       'updatedAt': updatedAt,
+      'isVerified': isVerified,
     };
   }
 
   factory FormStruct.fromMap(Map<String, dynamic> map) {
     return FormStruct(
       id: map['id'] as String,
-      code: map['Code'] as String,
+      code: map['code'] != null ? map['code'] as String : null,
       name: map['name'] as String,
-      createdAt: map['createdAt'] as String,
-      description: map['description'] as String,
-      updatedAt: map['updatedAt'] as String,
+      createdAt: map['createdAt'] != null ? map['createdAt'] as String : null,
+      description:
+          map['description'] != null ? map['description'] as String : null,
+      updatedAt: map['updatedAt'] != null ? map['updatedAt'] as String : null,
+      isVerified: map['isVerified'] != null ? map['isVerified'] as bool : null,
     );
   }
 
@@ -64,7 +72,7 @@ class FormStruct {
 
   @override
   String toString() {
-    return 'Form(id: $id, Code: $code, name: $name, createdAt: $createdAt, description: $description, updatedAt: $updatedAt)';
+    return 'FormStruct(id: $id, code: $code, name: $name, createdAt: $createdAt, description: $description, updatedAt: $updatedAt, isVerified: $isVerified)';
   }
 
   @override
@@ -76,7 +84,8 @@ class FormStruct {
         other.name == name &&
         other.createdAt == createdAt &&
         other.description == description &&
-        other.updatedAt == updatedAt;
+        other.updatedAt == updatedAt &&
+        other.isVerified == isVerified;
   }
 
   @override
@@ -86,6 +95,7 @@ class FormStruct {
         name.hashCode ^
         createdAt.hashCode ^
         description.hashCode ^
-        updatedAt.hashCode;
+        updatedAt.hashCode ^
+        isVerified.hashCode;
   }
 }
