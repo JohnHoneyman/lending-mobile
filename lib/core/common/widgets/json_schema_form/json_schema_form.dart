@@ -47,6 +47,16 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, dynamic> formData = {};
 
+  bool _isLoading = false;
+
+  void _handleOnTap(bool value) async {
+    setState(() {
+      _isLoading = value;
+    });
+
+    await Future.delayed(const Duration(seconds: 2));
+  }
+
   Widget buildField(JsonSchema schema, String? keyName, String? rootProperty) {
     Widget field;
 
@@ -199,24 +209,28 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
               ),
               const Gap(),
               Button(
-                buttonName: 'Save changes',
-                onPress: () {
-                  if (_formKey.currentState!.validate()) {
-                    widget.onSubmit(formData);
+                buttonName: _isLoading ? 'Saving' : 'Save changes',
+                onPress: _isLoading
+                    ? () {}
+                    : () {
+                        _handleOnTap(true);
+                        if (_formKey.currentState!.validate()) {
+                          widget.onSubmit(formData);
 
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('$formData'),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Validation failed'),
-                      ),
-                    );
-                  }
-                },
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('$formData'),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Validation failed'),
+                            ),
+                          );
+                        }
+                        _handleOnTap(false);
+                      },
               ),
               const Gap(),
             ],

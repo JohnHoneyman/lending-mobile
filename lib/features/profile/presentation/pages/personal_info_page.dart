@@ -50,6 +50,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   void initState() {
     super.initState();
     fetchFormListData();
+    print('KeycloakWrapper: $keycloakWrapper');
   }
 
   @override
@@ -249,12 +250,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                   false,
                           onTap: () => Navigator.push(
                             context,
-                            FormPage.route(''),
+                            FormPage.route((profileItems[index] as Map)['id']),
                           ),
-                          // onTap: () => Navigator.push(
-                          //   context,
-                          //   FormPage.route((profileItems[index] as Map)['id']),
-                          // ),
                         ),
                         const Gap(height: 8),
                       ],

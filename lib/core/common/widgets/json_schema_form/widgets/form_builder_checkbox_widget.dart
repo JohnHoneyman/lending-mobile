@@ -27,10 +27,16 @@ class FormBuilderCheckboxWidget extends StatefulWidget {
 }
 
 class _FormBuilderCheckboxWidgetState extends State<FormBuilderCheckboxWidget> {
+  late bool formValue;
+
+  @override
+  void initState() {
+    super.initState();
+    formValue = widget.currentValue;
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool formValue = widget.currentValue;
-
     return Row(
       children: [
         Text(widget.jsonSchema.title ?? widget.keyName ?? ''),
@@ -38,7 +44,10 @@ class _FormBuilderCheckboxWidgetState extends State<FormBuilderCheckboxWidget> {
           value: formValue,
           activeColor: Colors.deepPurple,
           onChanged: (value) {
-            widget.onChanged(value ?? false);
+            setState(() {
+              formValue = value ?? false;
+            });
+            widget.onChanged(formValue);
           },
         )
       ],
