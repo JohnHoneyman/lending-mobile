@@ -95,4 +95,32 @@ class FormEngineApi {
       return null;
     }
   }
+
+  Future<Response?> fetchFormDataFromUserId(
+      String accessToken, String userId) async {
+    final url = '$baseUrl/formdata/user/$userId';
+
+    final headers = {
+      'Authorization': 'Bearer $accessToken',
+      'Content-Type': 'application/json',
+    };
+
+    try {
+      final response = await dio.get(
+        url,
+        options: Options(
+          headers: headers,
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        print('Error response: ${response.data}');
+      }
+
+      return response;
+    } catch (e) {
+      print('Error submitting form: $e');
+      return null;
+    }
+  }
 }

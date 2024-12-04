@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
+import 'package:lendingmobile/core/model/form_data.dart';
 import 'package:lendingmobile/core/model/form_model.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
@@ -19,6 +20,7 @@ class PersonalInfoPage extends StatefulWidget {
 
 class _PersonalInfoPageState extends State<PersonalInfoPage> {
   List<FormStruct> formList = [];
+  List<FormDataStruct> formDataList = [];
 
   void fetchFormListData() async {
     final accessToken = await getAccessToken();
@@ -46,11 +48,35 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
     }
   }
 
+  void fetchFormDataFromUserId() async {
+    final accessToken = await getAccessToken();
+
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
+      final userId = keycloakWrapper
+          .tokenResponse?.tokenAdditionalParameters?['session_state'];
+
+      final response =
+          await formEngineApi.fetchFormDataFromUserId(accessToken, userId);
+
+      if (response != null && response.statusCode == 200) {
+        List<FormDataStruct> updatedFormDataList = [];
+        for (var item in response.data['data']) {
+          updatedFormDataList.add(FormDataStruct.fromMap(item));
+        }
+
+        setState(() {
+          formDataList = updatedFormDataList;
+        });
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     fetchFormListData();
-    print('KeycloakWrapper: $keycloakWrapper');
+    fetchFormDataFromUserId();
   }
 
   @override
