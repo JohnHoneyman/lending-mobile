@@ -216,12 +216,6 @@ class _JsonSchemaFormState extends State<JsonSchemaForm> {
                         _handleOnTap(true);
                         if (_formKey.currentState!.validate()) {
                           widget.onSubmit(formData);
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('$formData'),
-                            ),
-                          );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

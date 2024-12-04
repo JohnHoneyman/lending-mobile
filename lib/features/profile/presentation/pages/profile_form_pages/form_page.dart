@@ -5,6 +5,7 @@ import 'package:lendingmobile/core/common/widgets/json_schema_form/json_schema_f
 import 'package:lendingmobile/core/model/form_info.dart';
 import 'package:lendingmobile/core/services/dio/get_access_token.dart';
 import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
+import 'package:lendingmobile/features/profile/index.dart';
 
 class FormPage extends StatefulWidget {
   final String formId;
@@ -61,7 +62,14 @@ class _FormPageState extends State<FormPage> {
           await formEngineApi.submitDataToForm(accessToken, formattedData);
 
       if (response != null && response.statusCode == 200) {
-        print('Success! $response');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Successfully saved changes.'),
+            ),
+          );
+          Navigator.pushReplacement(context, PersonalInfoPage.route());
+        }
       } else {
         print('Failed! $response');
       }
