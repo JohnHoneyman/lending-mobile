@@ -1,16 +1,17 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class FormEngineApi {
   final Dio dio;
 
   FormEngineApi(this.dio);
 
-  static const String baseUrl = 'https://forms-engine-an7kk7zfja-as.a.run.app';
+  static String? baseUrl = dotenv.env['BASE_URL'];
 
   Future<Response?> fetchFormList(String accessToken) async {
-    const url = '$baseUrl/form';
+    final String url = '$baseUrl/form';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',
@@ -67,7 +68,7 @@ class FormEngineApi {
     String accessToken,
     Map<String, dynamic> data,
   ) async {
-    const url = '$baseUrl/formdata';
+    final String url = '$baseUrl/formdata';
 
     final headers = {
       'Authorization': 'Bearer $accessToken',

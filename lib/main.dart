@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/constants/constants.dart';
 import 'package:lendingmobile/features/auth/index.dart';
 
-void main() {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   keycloakWrapper.initialize();
   runApp(const LendingApp());
 }
