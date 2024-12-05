@@ -52,4 +52,9 @@ class KeycloakConfig {
 
   /// The user information endpoint to retrieve user profile data using a valid access token.
   String get userInfoEndpoint => '$issuer/protocol/openid-connect/userinfo';
+
+  @override
+  String toString() {
+    return 'KeycloakConfig(bundleIdentifier: $bundleIdentifier, clientId: $clientId, frontendUrl: $frontendUrl, realm: $realm, additionalScopes: $additionalScopes, clientSecret: $clientSecret)';
+  }
 }

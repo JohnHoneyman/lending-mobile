@@ -1,45 +1,117 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
+import 'package:lendingmobile/core/model/form_data.dart';
+import 'package:lendingmobile/core/model/form_model.dart';
+import 'package:lendingmobile/core/services/dio/get_access_token.dart';
+import 'package:lendingmobile/core/services/form_engine/form_engine_api.dart';
+import 'package:lendingmobile/core/utils/get_form_version_id.dart';
 import 'package:lendingmobile/features/profile/index.dart';
+import 'package:lendingmobile/features/profile/presentation/pages/profile_form_pages/form_page.dart';
 
-class PersonalInfoPage extends StatelessWidget {
-  static route() => MaterialPageRoute(
-        builder: (context) => const PersonalInfoPage(),
+class PersonalInfoPage extends StatefulWidget {
+  final String userId;
+
+  const PersonalInfoPage({super.key, required this.userId});
+
+  static route(String userId) => MaterialPageRoute(
+        builder: (context) => PersonalInfoPage(userId: userId),
       );
-  const PersonalInfoPage({super.key});
+
+  @override
+  State<PersonalInfoPage> createState() => _PersonalInfoPageState();
+}
+
+class _PersonalInfoPageState extends State<PersonalInfoPage> {
+  List<FormStruct> formList = [];
+  List<FormDataStruct> formDataList = [];
+
+  void handleFetchFormListData() async {
+    final accessToken = await getAccessToken();
+
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
+
+      final response = await formEngineApi.fetchFormList(accessToken, 1, 10);
+
+      if (response != null && response.statusCode == 200) {
+        List<FormStruct> updatedFormList = [];
+        for (var item in response.data['data']) {
+          updatedFormList.add(FormStruct.fromMap(item));
+        }
+
+        setState(() {
+          formList = updatedFormList;
+        });
+      } else {
+        print('Failed to submit form. Status code: ${response?.data}');
+      }
+    } else {
+      print('Failed to get access token');
+    }
+  }
+
+  void handleFetchFormDataFromUserId() async {
+    final accessToken = await getAccessToken();
+
+    if (accessToken != null) {
+      final formEngineApi = FormEngineApi(Dio());
+      final userId = widget.userId;
+
+      final response = await formEngineApi.fetchFormDataFromUserId(
+          accessToken, userId, 1, 10);
+
+      if (response != null && response.statusCode == 200) {
+        List<FormDataStruct> updatedFormDataList = [];
+        for (var item in response.data['data']) {
+          updatedFormDataList.add(FormDataStruct.fromMap(item));
+        }
+
+        setState(() {
+          formDataList = updatedFormDataList;
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    handleFetchFormListData();
+    handleFetchFormDataFromUserId();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final profileItems = [
-      {
-        'infoName': 'Personal Information',
-        'route': PersonalInformationPage.route(),
-      },
-      {
-        'infoName': 'Valid IDs',
-        'route': ValidIdsPage.route(),
-      },
-      {
-        'infoName': 'Residential Address',
-        'route': ResidentialAddressPage.route(),
-      },
-      {
-        'infoName': 'Proof of Income',
-        'route': ResidentialAddressPage.route(),
-        'isVerified': true,
-      },
-      {
-        'infoName': 'Existing Loans (if any)',
-        'route': ResidentialAddressPage.route(),
-      },
-      {
-        'infoName': 'Credit Cards (if any)',
-        'route': ResidentialAddressPage.route(),
-      },
-      {
-        'infoName': 'Recurring monthly expenses (if any)',
-        'route': ResidentialAddressPage.route(),
-      },
+    final List<FormStruct> profileItems = [
+      FormStruct(
+        formID: '967ae16c-b3b7-469c-a302-626fc75de5e2',
+        name: 'Personal Information',
+      ),
+      FormStruct(
+        formID: 'c6b202cb-a86c-4c5b-8e23-4c38b3c112d3',
+        name: 'Valid IDs',
+      ),
+      FormStruct(
+        formID: '7806b593-73f7-449b-af21-9920dd1b36f4',
+        name: 'Residential Address',
+      ),
+      FormStruct(
+        formID: '533e8c38-4f0f-439c-aa5a-79d84a135262',
+        name: 'Proof of Income',
+      ),
+      FormStruct(
+        formID: 'febb3f5d-9be1-4829-b2e5-d044b84687e6',
+        name: 'Existing Loans (if any)',
+      ),
+      FormStruct(
+        formID: 'd6bb027b-7056-492d-a206-f1f5b6f0e52f',
+        name: 'Credit Cards (if any)',
+      ),
+      FormStruct(
+        formID: '8422a26f-f40a-47ba-9493-9f17f3d84e05',
+        name: 'Recurring monthly expenses (if any)',
+      ),
     ];
 
     return Scaffold(
@@ -176,41 +248,30 @@ class PersonalInfoPage extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: profileItems.length,
                   itemBuilder: (context, index) {
+                    final formVersionID =
+                        getFormVersionID(profileItems[index].formID, formList);
+                    final formVersion =
+                        getFormVersion(profileItems[index].formID, formList);
+
                     return Column(
                       children: [
                         ProfileInfoTypeWidget(
-                          infoName: profileItems[index]['infoName'] as String,
-                          isVerified:
-                              profileItems[index]['isVerified'] ?? false,
+                          infoName: profileItems[index].name,
+                          isVerified: profileItems[index].isVerified ?? false,
                           onTap: () => Navigator.push(
                             context,
-                            profileItems[index]['route'] as Route,
+                            FormPage.route(
+                              widget.userId,
+                              profileItems[index].formID,
+                              formVersionID,
+                              formVersion,
+                            ),
                           ),
                         ),
                         const Gap(height: 8),
                       ],
                     );
                   },
-                ),
-                Container(
-                  height: 72,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Credit Score',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
                 ),
                 const Gap(height: 8),
               ],

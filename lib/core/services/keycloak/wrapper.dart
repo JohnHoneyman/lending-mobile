@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of "keycloak_wrapper.dart";
 
 /// A wrapper around the Keycloak authentication service.
@@ -206,5 +207,10 @@ class KeycloakWrapper {
       _isInitialized,
       'Make sure the package has been initialized prior to calling this method.',
     );
+  }
+
+  @override
+  String toString() {
+    return 'KeycloakWrapper(_isInitialized: $_isInitialized, _keycloakConfig: $_keycloakConfig, onError: $onError, tokenResponse: $tokenResponse)';
   }
 }

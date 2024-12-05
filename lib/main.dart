@@ -1,16 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/core/constants/constants.dart';
 import 'package:lendingmobile/features/auth/index.dart';
 
-void main() {
+Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: '.env');
   keycloakWrapper.initialize();
   runApp(const LendingApp());
 }
 
 class LendingApp extends StatelessWidget {
-  const LendingApp({super.key});
+  static MaterialPageRoute route({bool isFromCalcPage = false}) =>
+      MaterialPageRoute(
+        builder: (context) => LendingApp(
+          isFromCalcPage: isFromCalcPage,
+        ),
+      );
+
+  final bool isFromCalcPage;
+  const LendingApp({
+    super.key,
+    this.isFromCalcPage = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +41,9 @@ class LendingApp extends StatelessWidget {
           } else if (snapshot.data!) {
             return const HomeScreen();
           } else {
-            return const LoginScreen();
+            return LoginScreen(
+              isFromCalcPage: isFromCalcPage,
+            );
           }
         },
       ),
