@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-class BotNavbar extends StatefulWidget {
+class BotNavbarWidget extends StatefulWidget {
   final int selectedIndex;
   final ValueChanged<int> onTap;
-  const BotNavbar(
+  const BotNavbarWidget(
       {super.key, required this.selectedIndex, required this.onTap});
 
   @override
-  State<BotNavbar> createState() => _BotNavbarState();
+  State<BotNavbarWidget> createState() => _BotNavbarWidgetState();
 }
 
-class _BotNavbarState extends State<BotNavbar> {
+class _BotNavbarWidgetState extends State<BotNavbarWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(

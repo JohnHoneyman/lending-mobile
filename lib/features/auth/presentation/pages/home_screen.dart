@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lendingmobile/core/common/index.dart';
 import 'package:lendingmobile/features/auth/presentation/pages/sections/popular_loan_offers_section.dart';
 import 'package:lendingmobile/features/auth/presentation/pages/sections/whats_new_section.dart';
+import 'package:lendingmobile/features/loan/index.dart';
 import 'package:lendingmobile/features/profile/index.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BotNavbar(
+      bottomNavigationBar: BotNavbarWidget(
         selectedIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
@@ -41,6 +42,8 @@ class _HomeScreenState extends State<HomeScreen> {
         builder: (context, snapshot) {
           final name = snapshot.data?['name'];
           log(keycloakWrapper.accessToken!);
+          log(keycloakWrapper.toString());
+          log(snapshot.data.toString());
           return SafeArea(
             child: RefreshIndicator(
               onRefresh: _onPullToRefresh,
@@ -159,7 +162,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         )
                       : _selectedIndex == 1
-                          ? const Placeholder()
+                          ? const AddLoanPage()
                           : ProfilePage(snapshotData: snapshot),
                 ),
               ),
